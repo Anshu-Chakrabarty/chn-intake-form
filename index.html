@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>New Patient Intake — Community Healthcare Network</title>
+
+<!--
+  ============================================================================
+  Community Healthcare Network — New Patient Intake Form
+  ----------------------------------------------------------------------------
+  PRIVACY / SECURITY NOTE (read before deploying):
+  This file is only the patient-facing form. It does NOT, on its own, make an
+  intake "HIPAA compliant." The surrounding website, CMS, hosting environment,
+  TLS configuration, and any other scripts loaded on the same page must be
+  reviewed separately for privacy and security. A public inbound webhook URL
+  is browser-accessible by design and cannot be kept secret by front-end code.
+  See the honeypot / timing comments and the Turnstile placeholder below.
+  ============================================================================
+-->
+
+<style>
+/* ==========================================================================
+   All styles are scoped beneath .chn-intake-form so nothing leaks into a
+   host CMS theme (WordPress content area, etc.) and the theme is less likely
+   to break the form. No bare element selectors (body/input/h1/…) are styled.
+   ========================================================================== */
+
+.chn-intake-form,
+.chn-intake-form *,
+.chn-intake-form *::before,
+.chn-intake-form *::after { box-sizing: border-box; }
+
+.chn-intake-form {
+  /* --- Brand tokens (derived from CHN's teal-forward identity on chnnyc.org).
+         Adjust any value with a colour picker against the live site if needed. */
+  --chn-primary:        #007a82;  /* CHN teal — primary actions, headings accent */
+  --chn-primary-strong: #005a60;  /* hover / pressed */
+  --chn-primary-tint:   #e2f1f1;  /* selected field / soft fills */
+  --chn-secondary:      #123138;  /* deep teal-ink for display headings */
+  --chn-accent:         #e4633b;  /* warm coral — used sparingly for warmth */
+  --chn-accent-soft:    #fdece5;
+
+  --chn-background:      #eef6f6;  /* soft teal page wash */
+  --chn-surface:        #ffffff;
+  --chn-panel-1:        #00757d;  /* side-panel gradient start */
+  --chn-panel-2:        #0a4a52;  /* side-panel gradient end */
+
+  --chn-text:           #1c2b30;
+  --chn-muted-text:     #566b70;
+  --chn-on-panel:       #f2fbfb;
+  --chn-on-panel-muted: #bfe0e1;
+
+  --chn-border:         #d5e3e3;
+  --chn-field-border:   #b4c8ca;
+  --chn-success:        #1e7a52;
+  --chn-success-soft:   #e7f4ec;
+  --chn-error:          #c13525;
+  --chn-error-soft:     #fcebe8;
+
+  --chn-radius:         16px;
+  --chn-radius-sm:      10px;
+  --chn-form-width:     1040px;
+
+  --chn-shadow:         0 1px 2px rgba(18,49,56,.06), 0 18px 40px -22px rgba(18,49,56,.35);
+  --chn-shadow-sm:      0 1px 2px rgba(18,49,56,.08);
+  --chn-ring:           0 0 0 3px rgba(0,122,130,.35);
+
+  --chn-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+  /* Deliberate: no external web-font is loaded. A privacy-first health form
+     should not make third-party font requests from the patient's browser. */
+  font-family: var(--chn-font-body);
+  color: var(--chn-text);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background: var(--chn-background);
+  background-image:
+    radial-gradient(120% 90% at 100% 0%, rgba(0,122,130,.10), transparent 60%),
+    radial-gradient(90% 70% at 0% 100%, rgba(228,99,59,.06), transparent 55%);
+  padding: clamp(16px, 4vw, 56px) clamp(12px, 3vw, 32px);
+  min-height: 100%;
+}
+
+/* ---- Shell / card layout -------------------------------------------------- */
+.chn-intake-form .chn-shell {
+  width: 100%;
+  max-width: var(--chn-form-width);
+  margin: 0 auto;
+  background: var(--chn-surface);
+  border: 1px solid var(--chn-border);
+  border-radius: calc(var(--chn-radius) + 6px);
+  box-shadow: var(--chn-shadow);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+}
+.chn-intake-form .chn-shell.chn-is-complete { grid-template-columns: 1fr; }
+
+/* ---- Branded side panel (the signature "care journey") -------------------- */
+.chn-intake-form .chn-aside {
+  position: relative;
+  background: linear-gradient(160deg, var(--chn-panel-1), var(--chn-panel-2));
+  color: var(--chn-on-panel);
+  padding: 32px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+.chn-intake-form .chn-aside::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(140% 60% at 100% 0%, rgba(228,99,59,.28), transparent 55%);
+  pointer-events: none;
+}
+.chn-intake-form .chn-aside > * { position: relative; z-index: 1; }
+
+.chn-intake-form .chn-logo-wrap {
+  background: #fff;
+  border-radius: var(--chn-radius-sm);
+  padding: 12px 14px;
+  align-self: flex-start;
+  box-shadow: var(--chn-shadow-sm);
+}
+.chn-intake-form .chn-logo { display: block; max-width: 190px; width: 100%; height: auto; }
+.chn-intake-form .chn-logo-fallback {
+  font-weight: 800; letter-spacing: .01em; color: var(--chn-secondary);
+  font-size: 15px; line-height: 1.2;
+}
+.chn-intake-form .chn-logo-fallback span { display: block; color: var(--chn-primary); font-size: 22px; }
+
+.chn-intake-form .chn-aside-eyebrow {
+  text-transform: uppercase; letter-spacing: .14em; font-size: 12px;
+  font-weight: 700; color: var(--chn-on-panel-muted); margin: 0 0 8px;
+}
+.chn-intake-form .chn-aside-title {
+  font-size: 23px; line-height: 1.2; font-weight: 750; margin: 0;
+  letter-spacing: -.01em; color: #fff;
+}
+
+/* vertical stepper */
+.chn-intake-form .chn-journey { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 2px; }
+.chn-intake-form .chn-journey li {
+  display: grid; grid-template-columns: 34px 1fr; align-items: center;
+  gap: 12px; padding: 9px 0; position: relative;
+}
+.chn-intake-form .chn-journey li::before { /* connector line */
+  content: ""; position: absolute; left: 16px; top: 34px; bottom: -9px;
+  width: 2px; background: rgba(255,255,255,.18);
+}
+.chn-intake-form .chn-journey li:last-child::before { display: none; }
+.chn-intake-form .chn-jnode {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700; font-size: 14px;
+  background: rgba(255,255,255,.14); color: var(--chn-on-panel);
+  border: 2px solid rgba(255,255,255,.28); transition: transform .2s ease, background .2s ease;
+}
+.chn-intake-form .chn-jlabel { font-size: 15px; font-weight: 600; color: var(--chn-on-panel-muted); }
+.chn-intake-form .chn-journey li[data-state="current"] .chn-jnode {
+  background: var(--chn-accent); border-color: #fff; color: #fff; transform: scale(1.05);
+  box-shadow: 0 0 0 4px rgba(228,99,59,.28);
+}
+.chn-intake-form .chn-journey li[data-state="current"] .chn-jlabel { color: #fff; }
+.chn-intake-form .chn-journey li[data-state="done"] .chn-jnode {
+  background: #fff; border-color: #fff; color: var(--chn-primary-strong);
+}
+.chn-intake-form .chn-journey li[data-state="done"] .chn-jlabel { color: var(--chn-on-panel); }
+
+.chn-intake-form .chn-aside-reassure {
+  margin-top: auto; font-size: 13.5px; color: var(--chn-on-panel-muted);
+  border-top: 1px solid rgba(255,255,255,.16); padding-top: 18px;
+}
+.chn-intake-form .chn-aside-reassure strong { color: #fff; font-weight: 650; }
+.chn-intake-form .chn-aside-phone {
+  display: inline-flex; align-items: baseline; gap: 6px; margin-top: 10px;
+  color: #fff; font-weight: 700; text-decoration: none; font-size: 16px;
+}
+.chn-intake-form .chn-aside-phone:hover { text-decoration: underline; }
+.chn-intake-form .chn-aside-phone small { font-weight: 500; color: var(--chn-on-panel-muted); font-size: 12px; }
+
+/* ---- Mobile header (hidden on desktop) ------------------------------------ */
+.chn-intake-form .chn-mhead { display: none; }
+
+/* ---- Main / form body ----------------------------------------------------- */
+.chn-intake-form .chn-main { padding: clamp(22px, 3.4vw, 40px); min-width: 0; }
+
+.chn-intake-form .chn-step-meta {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  margin-bottom: 6px;
+}
+.chn-intake-form .chn-step-count {
+  font-size: 13px; font-weight: 700; letter-spacing: .04em; color: var(--chn-primary);
+  text-transform: uppercase;
+}
+.chn-intake-form .chn-support-inline { font-size: 13px; color: var(--chn-muted-text); }
+.chn-intake-form .chn-support-inline a { color: var(--chn-primary-strong); font-weight: 600; text-decoration: none; }
+.chn-intake-form .chn-support-inline a:hover { text-decoration: underline; }
+
+/* progress bar */
+.chn-intake-form .chn-progress {
+  height: 8px; border-radius: 999px; background: var(--chn-primary-tint);
+  overflow: hidden; margin: 12px 0 26px;
+}
+.chn-intake-form .chn-progress-fill {
+  height: 100%; width: 25%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--chn-primary), #17a2ac);
+  transition: width .38s cubic-bezier(.4,0,.2,1);
+}
+
+.chn-intake-form .chn-eyebrow {
+  text-transform: uppercase; letter-spacing: .13em; font-size: 12px; font-weight: 700;
+  color: var(--chn-accent); margin: 0 0 8px;
+}
+.chn-intake-form .chn-h1 {
+  font-size: clamp(24px, 3.4vw, 31px); line-height: 1.15; letter-spacing: -.015em;
+  font-weight: 780; color: var(--chn-secondary); margin: 0 0 10px;
+}
+.chn-intake-form .chn-intro { font-size: 15.5px; color: var(--chn-muted-text); margin: 0 0 4px; max-width: 60ch; }
+.chn-intake-form .chn-intro .chn-req-key { color: var(--chn-text); font-weight: 600; }
+
+.chn-intake-form .chn-step { display: none; }
+.chn-intake-form .chn-step.chn-active { display: block; animation: chn-fade .32s ease both; }
+@keyframes chn-fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.chn-intake-form .chn-step-head { margin-bottom: 18px; }
+.chn-intake-form .chn-fieldset {
+  border: 1px solid var(--chn-border); border-radius: var(--chn-radius);
+  padding: 20px 20px 8px; margin: 0 0 20px; background: #fbfdfd;
+}
+.chn-intake-form .chn-fieldset > legend {
+  font-weight: 720; font-size: 16px; color: var(--chn-secondary);
+  padding: 0 8px; margin-left: -8px;
+}
+.chn-intake-form .chn-section-help {
+  font-size: 13.5px; color: var(--chn-muted-text); margin: 2px 0 16px; max-width: 62ch;
+}
+
+/* field grid */
+.chn-intake-form .chn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
+.chn-intake-form .chn-field { margin-bottom: 16px; min-width: 0; }
+.chn-intake-form .chn-field.chn-col-2 { grid-column: 1 / -1; }
+
+.chn-intake-form .chn-label {
+  display: block; font-weight: 600; font-size: 14.5px; color: var(--chn-text); margin-bottom: 6px;
+}
+.chn-intake-form .chn-opt { color: var(--chn-muted-text); font-weight: 500; }
+.chn-intake-form .chn-req { color: var(--chn-accent); font-weight: 700; margin-left: 2px; }
+.chn-intake-form .chn-hint { display: block; font-size: 13px; color: var(--chn-muted-text); margin: -2px 0 8px; }
+
+.chn-intake-form .chn-input,
+.chn-intake-form .chn-select,
+.chn-intake-form .chn-textarea {
+  width: 100%; font: inherit; color: var(--chn-text); background: var(--chn-surface);
+  border: 1.5px solid var(--chn-field-border); border-radius: var(--chn-radius-sm);
+  padding: 12px 14px; transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  appearance: none; -webkit-appearance: none;
+}
+.chn-intake-form .chn-textarea { min-height: 108px; resize: vertical; line-height: 1.5; }
+.chn-intake-form .chn-select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%23566b70' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='5 8 10 13 15 8'/></svg>");
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 40px; cursor: pointer;
+}
+.chn-intake-form .chn-input::placeholder,
+.chn-intake-form .chn-textarea::placeholder { color: #93a6a9; }
+.chn-intake-form .chn-input:hover,
+.chn-intake-form .chn-select:hover,
+.chn-intake-form .chn-textarea:hover { border-color: var(--chn-primary); }
+.chn-intake-form .chn-input:focus-visible,
+.chn-intake-form .chn-select:focus-visible,
+.chn-intake-form .chn-textarea:focus-visible {
+  outline: none; border-color: var(--chn-primary); box-shadow: var(--chn-ring);
+}
+.chn-intake-form [aria-invalid="true"] { border-color: var(--chn-error) !important; background: #fff; }
+.chn-intake-form [aria-invalid="true"]:focus-visible { box-shadow: 0 0 0 3px rgba(193,53,37,.28) !important; }
+
+.chn-intake-form .chn-field-error {
+  display: none; align-items: center; gap: 6px;
+  color: var(--chn-error); font-size: 13px; font-weight: 600; margin-top: 7px;
+}
+.chn-intake-form .chn-field-error.chn-show { display: flex; }
+.chn-intake-form .chn-field-error::before { content: "!"; display: inline-grid; place-items: center;
+  width: 16px; height: 16px; border-radius: 50%; background: var(--chn-error); color: #fff; font-size: 11px; flex: none; }
+
+/* segmented (Yes/No) controls */
+.chn-intake-form .chn-segment { display: inline-flex; gap: 8px; flex-wrap: wrap; }
+.chn-intake-form .chn-segment .chn-seg-opt { position: relative; }
+.chn-intake-form .chn-segment input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chn-intake-form .chn-segment label {
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  border: 1.5px solid var(--chn-field-border); border-radius: var(--chn-radius-sm);
+  padding: 11px 22px; font-weight: 600; font-size: 15px; color: var(--chn-text);
+  background: var(--chn-surface); transition: all .15s ease; min-width: 96px; justify-content: center;
+}
+.chn-intake-form .chn-segment label:hover { border-color: var(--chn-primary); }
+.chn-intake-form .chn-segment input:checked + label {
+  border-color: var(--chn-primary); background: var(--chn-primary-tint); color: var(--chn-primary-strong);
+  box-shadow: inset 0 0 0 1px var(--chn-primary);
+}
+.chn-intake-form .chn-segment input:focus-visible + label { box-shadow: var(--chn-ring); }
+
+/* radio cards (stacked, longer text) */
+.chn-intake-form .chn-cards { display: grid; gap: 10px; }
+.chn-intake-form .chn-card { position: relative; }
+.chn-intake-form .chn-card input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chn-intake-form .chn-card label {
+  display: flex; align-items: flex-start; gap: 12px; cursor: pointer;
+  border: 1.5px solid var(--chn-field-border); border-radius: var(--chn-radius-sm);
+  padding: 14px 16px; background: var(--chn-surface); transition: all .15s ease;
+  font-size: 15px; color: var(--chn-text); line-height: 1.4;
+}
+.chn-intake-form .chn-card label::before {
+  content: ""; flex: none; width: 20px; height: 20px; border-radius: 50%; margin-top: 1px;
+  border: 2px solid var(--chn-field-border); transition: all .15s ease;
+}
+.chn-intake-form .chn-card label:hover { border-color: var(--chn-primary); }
+.chn-intake-form .chn-card input:checked + label {
+  border-color: var(--chn-primary); background: var(--chn-primary-tint);
+}
+.chn-intake-form .chn-card input:checked + label::before {
+  border-color: var(--chn-primary); background: var(--chn-primary);
+  box-shadow: inset 0 0 0 4px #fff;
+}
+.chn-intake-form .chn-card input:focus-visible + label { box-shadow: var(--chn-ring); }
+
+/* single checkbox */
+.chn-intake-form .chn-check {
+  display: flex; align-items: flex-start; gap: 12px; cursor: pointer;
+  border: 1.5px solid var(--chn-field-border); border-radius: var(--chn-radius-sm);
+  padding: 14px 16px; background: var(--chn-surface); transition: all .15s ease; font-size: 14.5px; line-height: 1.45;
+}
+.chn-intake-form .chn-check:hover { border-color: var(--chn-primary); }
+.chn-intake-form .chn-check input {
+  flex: none; width: 20px; height: 20px; margin-top: 1px; accent-color: var(--chn-primary); cursor: pointer;
+}
+.chn-intake-form .chn-check:has(input:focus-visible) { box-shadow: var(--chn-ring); border-color: var(--chn-primary); }
+.chn-intake-form .chn-check:has(input:checked) { background: var(--chn-primary-tint); border-color: var(--chn-primary); }
+
+/* conditional reveal */
+.chn-intake-form .chn-conditional { display: none; }
+.chn-intake-form .chn-conditional.chn-reveal {
+  display: block; animation: chn-reveal .28s ease both;
+}
+@keyframes chn-reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+/* error summary */
+.chn-intake-form .chn-error-summary {
+  display: none; border: 1.5px solid var(--chn-error); background: var(--chn-error-soft);
+  border-radius: var(--chn-radius-sm); padding: 16px 18px; margin-bottom: 22px;
+}
+.chn-intake-form .chn-error-summary.chn-show { display: block; }
+.chn-intake-form .chn-error-summary h2 { margin: 0 0 8px; font-size: 15px; color: var(--chn-error); font-weight: 700; }
+.chn-intake-form .chn-error-summary ul { margin: 0; padding-left: 18px; }
+.chn-intake-form .chn-error-summary li { margin: 4px 0; }
+.chn-intake-form .chn-error-summary button {
+  background: none; border: none; color: var(--chn-error); font: inherit; font-weight: 600;
+  text-decoration: underline; cursor: pointer; padding: 0; text-align: left;
+}
+
+/* review */
+.chn-intake-form .chn-review-group {
+  border: 1px solid var(--chn-border); border-radius: var(--chn-radius); overflow: hidden; margin-bottom: 16px;
+}
+.chn-intake-form .chn-review-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: #f4fafa; padding: 12px 16px; border-bottom: 1px solid var(--chn-border);
+}
+.chn-intake-form .chn-review-head h3 { margin: 0; font-size: 15px; color: var(--chn-secondary); font-weight: 700; }
+.chn-intake-form .chn-edit-btn {
+  background: #fff; border: 1.5px solid var(--chn-field-border); border-radius: 8px;
+  color: var(--chn-primary-strong); font: inherit; font-weight: 600; font-size: 13px;
+  padding: 6px 14px; cursor: pointer; transition: all .15s ease;
+}
+.chn-intake-form .chn-edit-btn:hover { border-color: var(--chn-primary); background: var(--chn-primary-tint); }
+.chn-intake-form .chn-edit-btn:focus-visible { outline: none; box-shadow: var(--chn-ring); }
+.chn-intake-form .chn-review-list { margin: 0; padding: 6px 16px 14px; }
+.chn-intake-form .chn-review-row { display: grid; grid-template-columns: 42% 1fr; gap: 12px; padding: 9px 0; border-bottom: 1px dashed var(--chn-border); }
+.chn-intake-form .chn-review-row:last-child { border-bottom: none; }
+.chn-intake-form .chn-review-row dt { color: var(--chn-muted-text); font-size: 14px; }
+.chn-intake-form .chn-review-row dd { margin: 0; color: var(--chn-text); font-size: 14.5px; font-weight: 550; word-break: break-word; }
+.chn-intake-form .chn-review-empty { color: var(--chn-muted-text); font-size: 14px; padding: 8px 0; }
+
+/* nav buttons */
+.chn-intake-form .chn-nav {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--chn-border);
+}
+.chn-intake-form .chn-btn {
+  font: inherit; font-weight: 650; font-size: 15.5px; border-radius: var(--chn-radius-sm);
+  padding: 13px 26px; cursor: pointer; border: 1.5px solid transparent; transition: all .16s ease;
+  display: inline-flex; align-items: center; gap: 9px; justify-content: center;
+}
+.chn-intake-form .chn-btn:focus-visible { outline: none; box-shadow: var(--chn-ring); }
+.chn-intake-form .chn-btn-primary { background: var(--chn-primary); color: #fff; }
+.chn-intake-form .chn-btn-primary:hover:not(:disabled) { background: var(--chn-primary-strong); }
+.chn-intake-form .chn-btn-primary:disabled { opacity: .62; cursor: not-allowed; }
+.chn-intake-form .chn-btn-ghost { background: #fff; color: var(--chn-primary-strong); border-color: var(--chn-field-border); }
+.chn-intake-form .chn-btn-ghost:hover { border-color: var(--chn-primary); background: var(--chn-primary-tint); }
+/* The hidden attribute must always win, even over display:inline-flex above
+   and over any host-theme rule. This is what actually toggles Back / Continue
+   / Submit and the step sections. */
+.chn-intake-form [hidden] { display: none !important; }
+.chn-intake-form .chn-spinner {
+  width: 17px; height: 17px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,.45);
+  border-top-color: #fff; animation: chn-spin .7s linear infinite;
+}
+@keyframes chn-spin { to { transform: rotate(360deg); } }
+
+/* honeypot: visually hidden but present in the DOM for bots to fill */
+.chn-intake-form .chn-hp {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* footer */
+.chn-intake-form .chn-foot {
+  text-align: center; margin: 22px auto 0; max-width: var(--chn-form-width);
+  font-size: 13px; color: var(--chn-muted-text);
+}
+.chn-intake-form .chn-foot a { color: var(--chn-primary-strong); font-weight: 600; text-decoration: none; }
+.chn-intake-form .chn-foot a:hover { text-decoration: underline; }
+
+/* success / confirmation */
+.chn-intake-form .chn-done { padding: clamp(30px, 6vw, 64px) clamp(22px, 4vw, 56px); text-align: center; }
+.chn-intake-form .chn-done-badge {
+  width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 22px;
+  background: var(--chn-success-soft); display: grid; place-items: center;
+}
+.chn-intake-form .chn-done-badge svg { width: 40px; height: 40px; stroke: var(--chn-success); }
+.chn-intake-form .chn-done h2 { font-size: clamp(24px, 3.6vw, 30px); color: var(--chn-secondary); margin: 0 0 12px; letter-spacing: -.01em; }
+.chn-intake-form .chn-done p { color: var(--chn-muted-text); font-size: 16px; max-width: 52ch; margin: 0 auto 10px; }
+.chn-intake-form .chn-done .chn-done-support { margin-top: 20px; font-size: 14px; }
+.chn-intake-form .chn-done .chn-done-support a { color: var(--chn-primary-strong); font-weight: 700; text-decoration: none; }
+
+.chn-intake-form .chn-sr { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ==========================================================================
+   CMS HARDENING — re-assert the properties a host theme is most likely to
+   clobber with bare-element !important rules (input {...!important}, h1 {...}).
+   All still scoped to .chn-intake-form. Remove this block if your theme is
+   already well-behaved and you want fully overridable fields.
+   ========================================================================== */
+.chn-intake-form { letter-spacing: normal !important; }
+.chn-intake-form .chn-input,
+.chn-intake-form .chn-select,
+.chn-intake-form .chn-textarea,
+.chn-intake-form .chn-btn,
+.chn-intake-form .chn-segment label,
+.chn-intake-form .chn-card label,
+.chn-intake-form .chn-check {
+  box-sizing: border-box !important;
+  font-family: var(--chn-font-body) !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+.chn-intake-form .chn-input,
+.chn-intake-form .chn-select,
+.chn-intake-form .chn-textarea {
+  width: 100% !important;
+  -webkit-appearance: none !important; appearance: none !important;
+  background-color: var(--chn-surface) !important;
+  color: var(--chn-text) !important;
+  border: 1.5px solid var(--chn-field-border) !important;
+  border-radius: var(--chn-radius-sm) !important;
+  line-height: 1.5 !important;
+}
+.chn-intake-form .chn-select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%23566b70' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='5 8 10 13 15 8'/></svg>") !important;
+  background-repeat: no-repeat !important; background-position: right 12px center !important;
+}
+.chn-intake-form .chn-textarea { min-height: 108px !important; }
+.chn-intake-form .chn-input:hover,
+.chn-intake-form .chn-select:hover,
+.chn-intake-form .chn-textarea:hover { border-color: var(--chn-primary) !important; }
+.chn-intake-form .chn-input:focus-visible,
+.chn-intake-form .chn-select:focus-visible,
+.chn-intake-form .chn-textarea:focus-visible { border-color: var(--chn-primary) !important; box-shadow: var(--chn-ring) !important; }
+.chn-intake-form [aria-invalid="true"] { border-color: var(--chn-error) !important; }
+.chn-intake-form .chn-btn { -webkit-appearance: none !important; appearance: none !important; }
+.chn-intake-form .chn-h1,
+.chn-intake-form .chn-aside-title,
+.chn-intake-form .chn-done h2,
+.chn-intake-form .chn-review-head h3,
+.chn-intake-form .chn-error-summary h2 {
+  text-transform: none !important; font-family: var(--chn-font-body) !important;
+}
+
+/* ---- Responsive ----------------------------------------------------------- */
+@media (max-width: 860px) {
+  .chn-intake-form { padding: 0 0 24px; }
+  .chn-intake-form .chn-shell { grid-template-columns: 1fr; border-radius: 0; border-left: 0; border-right: 0; box-shadow: none; }
+  .chn-intake-form .chn-aside { display: none; }           /* desktop panel hidden */
+  .chn-intake-form .chn-mhead { display: block; }          /* mobile header shown */
+  .chn-intake-form .chn-main { padding: 20px 16px 26px; }
+  .chn-intake-form .chn-grid { grid-template-columns: 1fr; }
+  .chn-intake-form .chn-review-row { grid-template-columns: 1fr; gap: 2px; }
+  .chn-intake-form .chn-review-row dt { font-size: 13px; }
+  .chn-intake-form .chn-nav { flex-direction: column-reverse; }
+  .chn-intake-form .chn-nav .chn-btn { width: 100%; }
+  /* the teal mobile header already shows step + progress, so drop the desktop row */
+  .chn-intake-form .chn-step-meta,
+  .chn-intake-form .chn-progress { display: none; }
+  .chn-intake-form .chn-segment { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+  .chn-intake-form .chn-segment label { min-width: 0; width: 100%; }
+  .chn-intake-form .chn-foot { padding: 0 16px; }
+}
+
+.chn-intake-form .chn-mhead {
+  background: linear-gradient(160deg, var(--chn-panel-1), var(--chn-panel-2));
+  color: var(--chn-on-panel); padding: 20px 16px 18px;
+}
+.chn-intake-form .chn-mhead .chn-logo-wrap { margin-bottom: 14px; }
+.chn-intake-form .chn-mhead .chn-mstep { font-size: 13px; font-weight: 700; letter-spacing: .04em; color: var(--chn-on-panel-muted); text-transform: uppercase; }
+.chn-intake-form .chn-mhead .chn-mtitle { font-size: 18px; font-weight: 700; color: #fff; margin: 3px 0 12px; }
+.chn-intake-form .chn-mbar { height: 7px; border-radius: 999px; background: rgba(255,255,255,.22); overflow: hidden; }
+.chn-intake-form .chn-mbar-fill { height: 100%; width: 25%; background: #fff; border-radius: 999px; transition: width .38s cubic-bezier(.4,0,.2,1); }
+
+@media (max-width: 400px) {
+  .chn-intake-form .chn-fieldset { padding: 16px 14px 4px; }
+  .chn-intake-form .chn-segment { grid-template-columns: 1fr; }
+}
+
+/* Respect reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .chn-intake-form *,
+  .chn-intake-form *::before,
+  .chn-intake-form *::after {
+    animation-duration: .001ms !important; animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important; scroll-behavior: auto !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ======================= FORM WRAPPER (scoped root) ======================= -->
+<div class="chn-intake-form">
+  <div class="chn-shell" id="chn-shell">
+
+    <!-- ---------- Branded side panel (desktop) ---------- -->
+    <aside class="chn-aside">
+      <div class="chn-logo-wrap">
+        <img class="chn-logo" id="chn-logo" alt="Community Healthcare Network" />
+        <div class="chn-logo-fallback" id="chn-logo-fallback" hidden>
+          Community Healthcare <span>Network</span>
+        </div>
+      </div>
+
+      <div>
+        <p class="chn-aside-eyebrow">New patient intake</p>
+        <h2 class="chn-aside-title">Welcome. Let's get you ready for your visit.</h2>
+      </div>
+
+      <ol class="chn-journey" id="chn-journey" aria-hidden="true">
+        <li data-step="1"><span class="chn-jnode">1</span><span class="chn-jlabel">About you</span></li>
+        <li data-step="2"><span class="chn-jnode">2</span><span class="chn-jlabel">Contact &amp; support</span></li>
+        <li data-step="3"><span class="chn-jnode">3</span><span class="chn-jlabel">Health details</span></li>
+        <li data-step="4"><span class="chn-jnode">4</span><span class="chn-jlabel">Review</span></li>
+      </ol>
+
+      <div class="chn-aside-reassure">
+        <strong>Your information is submitted securely</strong> to the Community Healthcare Network care team.
+        <a class="chn-aside-phone" href="tel:+18662468259">866-246-8259<br><small>Need help completing this form?</small></a>
+      </div>
+    </aside>
+
+    <!-- ---------- Main column ---------- -->
+    <div class="chn-main">
+
+      <!-- Mobile header (shown < 860px) -->
+      <div class="chn-mhead">
+        <div class="chn-logo-wrap">
+          <img class="chn-logo" id="chn-logo-m" alt="Community Healthcare Network" />
+          <div class="chn-logo-fallback" id="chn-logo-fallback-m" hidden>Community Healthcare <span>Network</span></div>
+        </div>
+        <p class="chn-mstep" id="chn-mstep">Step 1 of 4</p>
+        <p class="chn-mtitle" id="chn-mtitle">About you</p>
+        <div class="chn-mbar" role="progressbar" aria-label="Intake progress"
+             aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="chn-mprogressbar">
+          <div class="chn-mbar-fill" id="chn-mbar-fill"></div>
+        </div>
+      </div>
+
+      <form id="chn-form" novalidate>
+
+        <!-- desktop step meta + progress -->
+        <div class="chn-step-meta">
+          <span class="chn-step-count" id="chn-step-count">Step 1 of 4 · About you</span>
+          <span class="chn-support-inline">Need help? <a href="tel:+18662468259">866-246-8259</a></span>
+        </div>
+        <div class="chn-progress" role="progressbar" aria-label="Intake progress"
+             aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="chn-progressbar">
+          <div class="chn-progress-fill" id="chn-progress-fill"></div>
+        </div>
+
+        <!-- error summary (shared) -->
+        <div class="chn-error-summary" id="chn-error-summary" role="alert" tabindex="-1">
+          <h2 id="chn-error-summary-title">Please review these fields</h2>
+          <ul id="chn-error-summary-list"></ul>
+        </div>
+
+        <!-- ================= STEP 1 — ABOUT YOU ================= -->
+        <section class="chn-step chn-active" data-step="1" aria-labelledby="chn-s1-h">
+          <div class="chn-step-head">
+            <p class="chn-eyebrow">New patient intake</p>
+            <h1 class="chn-h1" id="chn-s1-h" tabindex="-1">Tell us a little about yourself</h1>
+            <p class="chn-intro">This secure intake form helps the Community Healthcare Network care team prepare for your visit.
+              <span class="chn-req-key">Required fields are marked with an asterisk&nbsp;(<span class="chn-req">*</span>).</span>
+              Optional questions help us provide respectful and personalized care and may be skipped.</p>
+          </div>
+
+          <fieldset class="chn-fieldset">
+            <legend>About you</legend>
+            <p class="chn-section-help">Names and pronouns, so we get it right from the first hello.</p>
+
+            <div class="chn-grid">
+              <div class="chn-field">
+                <label class="chn-label" for="email">Email <span class="chn-req" aria-hidden="true">*</span></label>
+                <input class="chn-input" type="email" id="email" name="email" autocomplete="email"
+                       inputmode="email" required aria-describedby="email-err" />
+                <p class="chn-field-error" id="email-err"></p>
+              </div>
+
+              <div class="chn-field">
+                <label class="chn-label" for="preferred_name">Name you go by <span class="chn-req" aria-hidden="true">*</span></label>
+                <input class="chn-input" type="text" id="preferred_name" name="preferred_name" autocomplete="name"
+                       required aria-describedby="preferred_name-err" />
+                <p class="chn-field-error" id="preferred_name-err"></p>
+              </div>
+            </div>
+
+            <div class="chn-field chn-col-2">
+              <label class="chn-label" id="lnd-label">Is your legal name different from the name you go by? <span class="chn-req" aria-hidden="true">*</span></label>
+              <div class="chn-segment" role="radiogroup" aria-labelledby="lnd-label" aria-describedby="legal_name_different-err">
+                <span class="chn-seg-opt">
+                  <input type="radio" id="lnd-yes" name="legal_name_different" value="Yes"
+                         data-reveals="wrap-legal-name" />
+                  <label for="lnd-yes">Yes</label>
+                </span>
+                <span class="chn-seg-opt">
+                  <input type="radio" id="lnd-no" name="legal_name_different" value="No"
+                         data-reveals="wrap-legal-name" />
+                  <label for="lnd-no">No</label>
+                </span>
+              </div>
+              <p class="chn-field-error" id="legal_name_different-err"></p>
+            </div>
+
+            <!-- conditional: legal name (shows when Yes) -->
+            <div class="chn-field chn-col-2 chn-conditional" id="wrap-legal-name"
+                 data-show-when="legal_name_different" data-show-value="Yes">
+              <label class="chn-label" for="legal_name">Legal name <span class="chn-req" aria-hidden="true">*</span></label>
+              <input class="chn-input" type="text" id="legal_name" name="legal_name" autocomplete="off"
+                     data-required-when-visible aria-describedby="legal_name-err" disabled />
+              <p class="chn-field-error" id="legal_name-err"></p>
+            </div>
+
+            <div class="chn-grid">
+              <div class="chn-field">
+                <label class="chn-label" for="date_of_birth">Date of birth <span class="chn-req" aria-hidden="true">*</span></label>
+                <input class="chn-input" type="date" id="date_of_birth" name="date_of_birth" autocomplete="bday"
+                       required aria-describedby="date_of_birth-err" />
+                <p class="chn-field-error" id="date_of_birth-err"></p>
+              </div>
+
+              <div class="chn-field">
+                <label class="chn-label" for="pronouns">Pronouns <span class="chn-opt">(optional)</span></label>
+                <select class="chn-select" id="pronouns" name="pronouns" data-reveals="wrap-pronouns-self" data-reveal-value="Self-describe">
+                  <option value="">Select an option</option>
+                  <option>she/her</option>
+                  <option>he/him</option>
+                  <option>they/them</option>
+                  <option>she/they</option>
+                  <option>he/they</option>
+                  <option value="Self-describe">Self-describe</option>
+                  <option value="Prefer not to answer">Prefer not to answer</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="chn-field chn-col-2 chn-conditional" id="wrap-pronouns-self"
+                 data-show-when="pronouns" data-show-value="Self-describe">
+              <label class="chn-label" for="pronouns_self_describe">How would you like us to refer to you?</label>
+              <input class="chn-input" type="text" id="pronouns_self_describe" name="pronouns_self_describe" autocomplete="off" disabled />
+            </div>
+
+            <div class="chn-field chn-col-2">
+              <label class="chn-label" for="preferred_language">Preferred language for care <span class="chn-opt">(optional)</span></label>
+              <select class="chn-select" id="preferred_language" name="preferred_language" data-reveals="wrap-language-other" data-reveal-value="Other">
+                <option value="">Select an option</option>
+                <option>English</option>
+                <option>Spanish</option>
+                <option>Chinese (Mandarin)</option>
+                <option>Chinese (Cantonese)</option>
+                <option>Bengali</option>
+                <option>Haitian Creole</option>
+                <option>Russian</option>
+                <option>Korean</option>
+                <option>Arabic</option>
+                <option>French</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="chn-field chn-col-2 chn-conditional" id="wrap-language-other"
+                 data-show-when="preferred_language" data-show-value="Other">
+              <label class="chn-label" for="preferred_language_other">Which language?</label>
+              <input class="chn-input" type="text" id="preferred_language_other" name="preferred_language_other" autocomplete="off" disabled />
+            </div>
+          </fieldset>
+        </section>
+
+        <!-- ================= STEP 2 — CONTACT & SUPPORT ================= -->
+        <section class="chn-step" data-step="2" aria-labelledby="chn-s2-h" hidden>
+          <div class="chn-step-head">
+            <p class="chn-eyebrow">New patient intake</p>
+            <h1 class="chn-h1" id="chn-s2-h" tabindex="-1">Contact &amp; support</h1>
+            <p class="chn-intro">A few details about you and the people in your corner, so we can care for you well and reach the right person if we ever need to.</p>
+          </div>
+
+          <fieldset class="chn-fieldset">
+            <legend>Gender and sex information</legend>
+            <p class="chn-section-help">We ask both because they may affect screenings and medications differently. Your answers are used to support appropriate care, not to make assumptions about your identity.</p>
+
+            <div class="chn-field chn-col-2">
+              <label class="chn-label" for="gender_identity">Gender identity <span class="chn-opt">(optional)</span></label>
+              <select class="chn-select" id="gender_identity" name="gender_identity" data-reveals="wrap-gi-self" data-reveal-value="Self-describe">
+                <option value="">Select an option</option>
+                <option>Woman</option>
+                <option>Man</option>
+                <option>Nonbinary</option>
+                <option>Genderqueer</option>
+                <option>Agender</option>
+                <option>Questioning</option>
+                <option value="Self-describe">Self-describe</option>
+                <option value="Prefer not to answer">Prefer not to answer</option>
+              </select>
+            </div>
+
+            <div class="chn-field chn-col-2 chn-conditional" id="wrap-gi-self"
+                 data-show-when="gender_identity" data-show-value="Self-describe">
+              <label class="chn-label" for="gender_identity_self_describe">How do you describe your gender?</label>
+              <input class="chn-input" type="text" id="gender_identity_self_describe" name="gender_identity_self_describe" autocomplete="off" disabled />
+            </div>
+
+            <div class="chn-field chn-col-2">
+              <label class="chn-label" for="sex_assigned_at_birth">Sex assigned at birth <span class="chn-opt">(optional)</span></label>
+              <span class="chn-hint" id="sab-hint">Used for relevant clinical screening guidelines only.</span>
+              <select class="chn-select" id="sex_assigned_at_birth" name="sex_assigned_at_birth" aria-describedby="sab-hint">
+                <option value="">Select an option</option>
+                <option>Female</option>
+                <option>Male</option>
+                <option>Intersex</option>
+                <option value="Prefer not to answer">Prefer not to answer</option>
+              </select>
+            </div>
+
+            <div class="chn-field chn-col-2">
+              <label class="chn-check" for="gender_affirming_care">
+                <input type="checkbox" id="gender_affirming_care" name="gender_affirming_care" />
+                <span>I am currently receiving gender-affirming hormone therapy or have had gender-affirming surgery.
+                  <span class="chn-hint" style="margin:4px 0 0">This may help the care team interpret laboratory results correctly and avoid irrelevant questions.</span>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="chn-fieldset">
+            <legend>Relationships and support</legend>
+            <p class="chn-section-help">So we know who may be contacted, and who should not be.</p>
+
+            <div class="chn-field chn-col-2">
+              <label class="chn-label" for="relationship_status">Relationship status <span class="chn-opt">(optional)</span></label>
+              <select class="chn-select" id="relationship_status" name="relationship_status" data-reveals="wrap-rel-self" data-reveal-value="Self-describe">
+                <option value="">Select an option</option>
+                <option>Single</option>
+                <option>In a relationship</option>
+                <option>Partnered</option>
+                <option>Married</option>
+                <option>Separated</option>
+                <option>Divorced</option>
+                <option>Widowed</option>
+                <option value="Self-describe">Self-describe</option>
+                <option value="Prefer not to answer">Prefer not to answer</option>
+              </select>
+            </div>
+
+            <div class="chn-field chn-col-2 chn-conditional" id="wrap-rel-self"
+                 data-show-when="relationship_status" data-show-value="Self-describe">
+              <label class="chn-label" for="relationship_status_self_describe">How would you describe it?</label>
+              <input class="chn-input" type="text" id="relationship_status_self_describe" name="relationship_status_self_describe" autocomplete="off" disabled />
+            </div>
+
+            <div class="chn-grid">
+              <div class="chn-field">
+                <label class="chn-label" for="emergency_contact_name">Emergency contact name <span class="chn-req" aria-hidden="true">*</span></label>
+                <input class="chn-input" type="text" id="emergency_contact_name" name="emergency_contact_name" autocomplete="off"
+                       required aria-describedby="emergency_contact_name-err" />
+                <p class="chn-field-error" id="emergency_contact_name-err"></p>
+              </div>
+
+              <div class="chn-field">
+                <label class="chn-label" for="emergency_contact_relationship">Their relationship to you <span class="chn-req" aria-hidden="true">*</span></label>
+                <input class="chn-input" type="text" id="emergency_contact_relationship" name="emergency_contact_relationship" autocomplete="off"
+                       required aria-describedby="ecr-hint emergency_contact_relationship-err" />
+                <span class="chn-hint" id="ecr-hint">Describe it however makes sense to you. This does not need to be a legal or blood relationship.</span>
+                <p class="chn-field-error" id="emergency_contact_relationship-err"></p>
+              </div>
+            </div>
+
+            <div class="chn-grid">
+              <div class="chn-field">
+                <label class="chn-label" for="emergency_contact_phone">Emergency contact phone number <span class="chn-req" aria-hidden="true">*</span></label>
+                <input class="chn-input" type="tel" id="emergency_contact_phone" name="emergency_contact_phone"
+                       autocomplete="tel" inputmode="tel" required aria-describedby="emergency_contact_phone-err" />
+                <p class="chn-field-error" id="emergency_contact_phone-err"></p>
+              </div>
+
+              <div class="chn-field">
+                <label class="chn-label" id="eca-label">Authorized to receive updates about your care? <span class="chn-req" aria-hidden="true">*</span></label>
+                <div class="chn-segment" role="radiogroup" aria-labelledby="eca-label" aria-describedby="emergency_contact_authorized-err">
+                  <span class="chn-seg-opt">
+                    <input type="radio" id="eca-yes" name="emergency_contact_authorized" value="Yes" />
+                    <label for="eca-yes">Yes</label>
+                  </span>
+                  <span class="chn-seg-opt">
+                    <input type="radio" id="eca-no" name="emergency_contact_authorized" value="No" />
+                    <label for="eca-no">No</label>
+                  </span>
+                </div>
+                <p class="chn-field-error" id="emergency_contact_authorized-err"></p>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="chn-fieldset">
+            <legend>Your contact information</legend>
+
+            <div class="chn-field chn-col-2">
+              <label class="chn-label" for="address_line_1">Address line 1 <span class="chn-req" aria-hidden="true">*</span></label>
+              <input class="chn-input" type="text" id="address_line_1" name="address_line_1" autocomplete="address-line1"
+                     required aria-describedby="address_line_1-err" />
+              <p class="chn-field-error" id="address_line_1-err"></p>
+            </div>
+
+            <div class="chn-field chn-col-2">
+              <label class="chn-label" for="address_line_2">Address line 2 <span class="chn-opt">(optional)</span></label>
+              <input class="chn-input" type="text" id="address_line_2" name="address_line_2" autocomplete="address-line2" />
+            </div>
+
+            <div class="chn-grid">
+              <div class="chn-field">
+                <label class="chn-label" for="city">City <span class="chn-req" aria-hidden="true">*</span></label>
+                <input class="chn-input" type="text" id="city" name="city" autocomplete="address-level2"
+                       required aria-describedby="city-err" />
+                <p class="chn-field-error" id="city-err"></p>
+              </div>
+
+              <div class="chn-field">
+                <label class="chn-label" for="state">State <span class="chn-req" aria-hidden="true">*</span></label>
+                <select class="chn-select" id="state" name="state" autocomplete="address-level1"
+                        required aria-describedby="state-err">
+                  <option value="">Select</option>
+                  <!-- options injected by JS (US states + territories) -->
+                </select>
+                <p class="chn-field-error" id="state-err"></p>
+              </div>
+            </div>
+
+            <div class="chn-grid">
+              <div class="chn-field">
+                <label class="chn-label" for="postal_code">Postal code <span class="chn-req" aria-hidden="true">*</span></label>
+                <input class="chn-input" type="text" id="postal_code" name="postal_code" autocomplete="postal-code"
+                       inputmode="numeric" required aria-describedby="postal_code-err" />
+                <p class="chn-field-error" id="postal_code-err"></p>
+              </div>
+
+              <div class="chn-field">
+                <label class="chn-label" for="phone">Phone number <span class="chn-req" aria-hidden="true">*</span></label>
+                <input class="chn-input" type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel"
+                       required aria-describedby="phone-err" />
+                <p class="chn-field-error" id="phone-err"></p>
+              </div>
+            </div>
+
+            <div class="chn-field chn-col-2">
+              <label class="chn-label" id="dmp-label">Is it safe to leave detailed voicemails or messages at this phone number or email? <span class="chn-opt">(optional)</span></label>
+              <div class="chn-cards" role="radiogroup" aria-labelledby="dmp-label">
+                <span class="chn-card">
+                  <input type="radio" id="dmp-1" name="detailed_messages_permission" value="Yes, both phone and email are private to me" />
+                  <label for="dmp-1">Yes — both phone and email are private to me</label>
+                </span>
+                <span class="chn-card">
+                  <input type="radio" id="dmp-2" name="detailed_messages_permission" value="Phone only" />
+                  <label for="dmp-2">Phone only</label>
+                </span>
+                <span class="chn-card">
+                  <input type="radio" id="dmp-3" name="detailed_messages_permission" value="Email only" />
+                  <label for="dmp-3">Email only</label>
+                </span>
+                <span class="chn-card">
+                  <input type="radio" id="dmp-4" name="detailed_messages_permission" value="No, please keep messages general" />
+                  <label for="dmp-4">No — please keep messages general</label>
+                </span>
+              </div>
+            </div>
+          </fieldset>
+        </section>
+
+        <!-- ================= STEP 3 — HEALTH DETAILS ================= -->
+        <section class="chn-step" data-step="3" aria-labelledby="chn-s3-h" hidden>
+          <div class="chn-step-head">
+            <p class="chn-eyebrow">New patient intake</p>
+            <h1 class="chn-h1" id="chn-s3-h" tabindex="-1">Health details</h1>
+            <p class="chn-intro">Just enough for the care team to prepare. Share what you're comfortable with — you can always add more at your visit.</p>
+          </div>
+
+          <fieldset class="chn-fieldset">
+            <legend>Insurance</legend>
+
+            <div class="chn-field chn-col-2">
+              <label class="chn-label" for="insurance_status">Insurance status <span class="chn-opt">(optional)</span></label>
+              <select class="chn-select" id="insurance_status" name="insurance_status"
+                      data-reveals="wrap-insurance-details" data-reveal-value="Insured">
+                <option value="">Select an option</option>
+                <option>Insured</option>
+                <option>Uninsured</option>
+                <option>Not sure</option>
+                <option value="Prefer not to answer">Prefer not to answer</option>
+              </select>
+              <span class="chn-hint" style="margin-top:8px">CHN never turns anyone away, whether or not you have insurance.</span>
+            </div>
+
+            <div class="chn-conditional" id="wrap-insurance-details" data-show-when="insurance_status" data-show-value="Insured">
+              <div class="chn-grid">
+                <div class="chn-field">
+                  <label class="chn-label" for="insurance_provider">Insurance provider <span class="chn-opt">(optional)</span></label>
+                  <input class="chn-input" type="text" id="insurance_provider" name="insurance_provider" autocomplete="off" disabled />
+                </div>
+                <div class="chn-field">
+                  <label class="chn-label" for="insurance_member_id">Member ID <span class="chn-opt">(optional)</span></label>
+                  <input class="chn-input" type="text" id="insurance_member_id" name="insurance_member_id" autocomplete="off" disabled />
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="chn-fieldset">
+            <legend>Health basics</legend>
+            <p class="chn-section-help">A few details to help the care team prepare for your visit.</p>
+
+            <div class="chn-field chn-col-2">
+              <label class="chn-label" for="reason_for_visit">Reason for visit <span class="chn-req" aria-hidden="true">*</span></label>
+              <textarea class="chn-textarea" id="reason_for_visit" name="reason_for_visit"
+                        placeholder="In your own words, what would you like to be seen for?"
+                        required aria-describedby="reason_for_visit-err"></textarea>
+              <p class="chn-field-error" id="reason_for_visit-err"></p>
+            </div>
+
+            <div class="chn-field chn-col-2">
+              <label class="chn-label" for="current_medications">Current medications <span class="chn-opt">(optional)</span></label>
+              <textarea class="chn-textarea" id="current_medications" name="current_medications"
+                        aria-describedby="meds-hint"></textarea>
+              <span class="chn-hint" id="meds-hint">Include prescriptions, over-the-counter medications and supplements, where relevant.</span>
+            </div>
+
+            <div class="chn-field chn-col-2">
+              <label class="chn-label" for="allergies">Allergies <span class="chn-opt">(optional)</span></label>
+              <textarea class="chn-textarea" id="allergies" name="allergies" aria-describedby="allergies-hint"></textarea>
+              <span class="chn-hint" id="allergies-hint">Include medication, food or other known allergies, where relevant.</span>
+            </div>
+          </fieldset>
+        </section>
+
+        <!-- ================= STEP 4 — REVIEW ================= -->
+        <section class="chn-step" data-step="4" aria-labelledby="chn-s4-h" hidden>
+          <div class="chn-step-head">
+            <p class="chn-eyebrow">New patient intake</p>
+            <h1 class="chn-h1" id="chn-s4-h" tabindex="-1">Almost finished</h1>
+            <p class="chn-intro">Review the information below before securely submitting it to the care team.</p>
+          </div>
+
+          <fieldset class="chn-fieldset">
+            <legend>Notes for your care team</legend>
+            <div class="chn-field chn-col-2">
+              <label class="chn-label" for="care_team_notes">Anything else <span class="chn-opt">(optional)</span></label>
+              <textarea class="chn-textarea" id="care_team_notes" name="care_team_notes"
+                        placeholder="Share anything else you'd like the care team to know before your visit." aria-describedby="notes-hint"></textarea>
+              <span class="chn-hint" id="notes-hint">Share anything else you would like the care team to know before your visit.</span>
+            </div>
+          </fieldset>
+
+          <!-- review summary, built safely by JS -->
+          <div id="chn-review" aria-live="polite"></div>
+
+          <fieldset class="chn-fieldset" style="margin-top:20px">
+            <legend>Confirm &amp; submit</legend>
+            <div class="chn-field chn-col-2">
+              <label class="chn-check" for="information_accuracy_confirmed">
+                <input type="checkbox" id="information_accuracy_confirmed" name="information_accuracy_confirmed"
+                       required aria-describedby="information_accuracy_confirmed-err" />
+                <span>I confirm that the information provided is accurate to the best of my knowledge. I understand that I may request corrections or updates at any time.</span>
+              </label>
+              <p class="chn-field-error" id="information_accuracy_confirmed-err"></p>
+            </div>
+          </fieldset>
+        </section>
+
+        <!-- Honeypot: hidden from people & assistive tech; bots tend to fill it. -->
+        <div class="chn-hp" aria-hidden="true">
+          <label for="chn_company_url">Company website (leave blank)</label>
+          <input type="text" id="chn_company_url" name="chn_company_url" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <!-- ---------- Navigation ---------- -->
+        <div class="chn-nav">
+          <button type="button" class="chn-btn chn-btn-ghost" id="chn-back" hidden>← Back</button>
+          <button type="button" class="chn-btn chn-btn-primary" id="chn-continue">Continue →</button>
+          <button type="submit" class="chn-btn chn-btn-primary" id="chn-submit" hidden>
+            <span id="chn-submit-label">Submit securely</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- ---------- Success / confirmation (revealed on success) ---------- -->
+      <div class="chn-done" id="chn-done" hidden>
+        <div class="chn-logo-wrap" style="margin:0 auto 24px; display:inline-block;">
+          <img class="chn-logo" id="chn-logo-done" alt="Community Healthcare Network" style="margin:0 auto;" />
+          <div class="chn-logo-fallback" id="chn-logo-fallback-done" hidden>Community Healthcare <span>Network</span></div>
+        </div>
+        <div class="chn-done-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+        </div>
+        <h2 tabindex="-1" id="chn-done-h">Thank you — your information has been submitted</h2>
+        <p>The Community Healthcare Network care team has received your intake information and will review it before your visit.</p>
+        <p class="chn-done-support">Need assistance? Call <a href="tel:+18662468259">866-246-8259</a>.</p>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /shell -->
+
+  <p class="chn-foot">
+    Community Healthcare Network · Patient support <a href="tel:+18662468259">866-246-8259</a>
+  </p>
+</div><!-- /.chn-intake-form -->
+
+<script>
+(function () {
+  "use strict";
+
+  /* =========================================================================
+     CONFIGURATION — the two values you are most likely to change are here.
+     ========================================================================= */
+
+  // 1) Paste your GoHighLevel INBOUND WEBHOOK URL here (Workflow → Inbound Webhook).
+  //    This is NOT a secret and NOT the authenticated Contacts API. Do not put any
+  //    OAuth token / API key / private integration token anywhere in this file.
+  // Points at the same-origin Vercel proxy (api/intake.js), NOT at GHL directly.
+  // The proxy forwards to GHL server-side, so the real webhook URL stays hidden
+  // and there is no cross-origin/CORS problem for either the final submit or the
+  // sendBeacon partial. To revert to a direct-to-GHL setup, paste the webhook here.
+  var GHL_INBOUND_WEBHOOK_URL = "/api/intake";
+
+  // 2) Official CHN logo. Default below is the logo CHN uses on its own hosted
+  //    intake survey (stable public CDN). Swap for the chnnyc.org asset if you
+  //    prefer, or set to "" to show the text fallback wordmark.
+  var CHN_LOGO_URL = "https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/5KlfHXZqugsbkXJAvQ9N/media/6a562b1f46ff6bf801788cb0.png";
+
+  var SUBMIT_TIMEOUT_MS = 15000;   // AbortController timeout for the webhook call
+  var MIN_COMPLETION_MS = 4000;    // faster than this = treated as a bot, dropped
+  var TOTAL_STEPS = 4;
+
+  // 3) PARTIAL CAPTURE. When true, whatever the patient has entered is sent to
+  //    the SAME webhook each time they finish a step and if they leave the page
+  //    early — so an abandoned form still creates/updates a lead. Each partial is
+  //    tagged submission_status:"partial" with last_step_reached, and the final
+  //    submit is tagged "complete". GHL de-dupes on email/phone, so one contact
+  //    is progressively enriched. Set to false to only ever send on final submit.
+  //    NOTE: this transmits entered health info before the patient clicks the
+  //    final confirmation, so treat "partial" leads as not-yet-consented intake
+  //    in your GHL workflow (separate stage, no clinical use until completed).
+  var CAPTURE_PARTIAL = true;
+
+  /* =========================================================================
+     Scope everything to this form instance.
+     ========================================================================= */
+  var root = document.querySelector(".chn-intake-form");
+  var form = root.querySelector("#chn-form");
+  var loadedAt = Date.now();
+  var currentStep = 1;
+  var isSubmitting = false;
+  var completed = false;         // true after a successful final submit; stops partials
+  var lastPartialSnapshot = "";  // skip re-sending an identical partial
+
+  var stepNames = { 1: "About you", 2: "Contact & support", 3: "Health details", 4: "Review" };
+
+  /* ---- Logo setup ---- */
+  (function setupLogos() {
+    var pairs = [["#chn-logo", "#chn-logo-fallback"], ["#chn-logo-m", "#chn-logo-fallback-m"],
+                 ["#chn-logo-done", "#chn-logo-fallback-done"]];
+    pairs.forEach(function (p) {
+      var img = root.querySelector(p[0]);
+      var fb = root.querySelector(p[1]);
+      if (!img) return;
+      if (CHN_LOGO_URL) {
+        img.src = CHN_LOGO_URL;
+        img.onerror = function () { img.hidden = true; if (fb) fb.hidden = false; };
+      } else {
+        img.hidden = true; if (fb) fb.hidden = false;
+      }
+    });
+  })();
+
+  /* ---- Populate US state / territory options ---- */
+  (function fillStates() {
+    var states = [
+      ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
+      ["CO","Colorado"],["CT","Connecticut"],["DE","Delaware"],["DC","District of Columbia"],
+      ["FL","Florida"],["GA","Georgia"],["HI","Hawaii"],["ID","Idaho"],["IL","Illinois"],
+      ["IN","Indiana"],["IA","Iowa"],["KS","Kansas"],["KY","Kentucky"],["LA","Louisiana"],
+      ["ME","Maine"],["MD","Maryland"],["MA","Massachusetts"],["MI","Michigan"],["MN","Minnesota"],
+      ["MS","Mississippi"],["MO","Missouri"],["MT","Montana"],["NE","Nebraska"],["NV","Nevada"],
+      ["NH","New Hampshire"],["NJ","New Jersey"],["NM","New Mexico"],["NY","New York"],
+      ["NC","North Carolina"],["ND","North Dakota"],["OH","Ohio"],["OK","Oklahoma"],["OR","Oregon"],
+      ["PA","Pennsylvania"],["PR","Puerto Rico"],["RI","Rhode Island"],["SC","South Carolina"],
+      ["SD","South Dakota"],["TN","Tennessee"],["TX","Texas"],["UT","Utah"],["VT","Vermont"],
+      ["VA","Virginia"],["WA","Washington"],["WV","West Virginia"],["WI","Wisconsin"],["WY","Wyoming"]
+    ];
+    var sel = root.querySelector("#state");
+    states.forEach(function (s) {
+      var o = document.createElement("option");
+      o.value = s[1]; o.textContent = s[1];
+      sel.appendChild(o);
+    });
+  })();
+
+  /* =========================================================================
+     Conditional fields — reveal/hide, and disable hidden inputs so their
+     values never submit and they drop out of tab order / validation.
+     ========================================================================= */
+  function innerFields(wrap) {
+    return Array.prototype.slice.call(wrap.querySelectorAll("input, select, textarea"));
+  }
+
+  function setConditional(wrap, show) {
+    var fields = innerFields(wrap);
+    if (show) {
+      wrap.classList.add("chn-reveal");
+      fields.forEach(function (f) {
+        f.disabled = false;
+        if (f.hasAttribute("data-required-when-visible")) f.required = true;
+      });
+    } else {
+      wrap.classList.remove("chn-reveal");
+      fields.forEach(function (f) {
+        // clear stale hidden values so they can't be submitted or shown in review
+        if (f.type === "checkbox" || f.type === "radio") { f.checked = false; }
+        else { f.value = ""; }
+        f.required = false;
+        f.disabled = true;
+        f.removeAttribute("aria-invalid");
+      });
+      clearFieldErrorByWrap(wrap);
+    }
+  }
+
+  function evaluateConditionals() {
+    root.querySelectorAll(".chn-conditional").forEach(function (wrap) {
+      var controlName = wrap.getAttribute("data-show-when");
+      var showValue = wrap.getAttribute("data-show-value");
+      var control = form.elements[controlName];
+      var value = "";
+      if (control) {
+        if (control instanceof RadioNodeList || (control.length && !control.tagName)) {
+          value = control.value;
+        } else {
+          value = control.value;
+        }
+      }
+      setConditional(wrap, value === showValue);
+    });
+  }
+
+  // React to any control that drives a conditional
+  form.addEventListener("change", function (e) {
+    if (e.target.matches("[data-reveals], [name]")) evaluateConditionals();
+  });
+
+  /* =========================================================================
+     Progress + step display
+     ========================================================================= */
+  var progressFill = root.querySelector("#chn-progress-fill");
+  var progressBar = root.querySelector("#chn-progressbar");
+  var mbarFill = root.querySelector("#chn-mbar-fill");
+  var stepCount = root.querySelector("#chn-step-count");
+  var mStep = root.querySelector("#chn-mstep");
+  var mTitle = root.querySelector("#chn-mtitle");
+
+  function updateProgress() {
+    var pct = (currentStep / TOTAL_STEPS) * 100;
+    progressFill.style.width = pct + "%";
+    mbarFill.style.width = pct + "%";
+    progressBar.setAttribute("aria-valuenow", String(currentStep));
+    var mpb = root.querySelector("#chn-mprogressbar");
+    if (mpb) mpb.setAttribute("aria-valuenow", String(currentStep));
+    stepCount.textContent = "Step " + currentStep + " of " + TOTAL_STEPS + " · " + stepNames[currentStep];
+    mStep.textContent = "Step " + currentStep + " of " + TOTAL_STEPS;
+    mTitle.textContent = stepNames[currentStep];
+
+    root.querySelectorAll("#chn-journey li").forEach(function (li) {
+      var n = Number(li.getAttribute("data-step"));
+      li.setAttribute("data-state", n < currentStep ? "done" : (n === currentStep ? "current" : "upcoming"));
+    });
+  }
+
+  /* =========================================================================
+     Navigation
+     ========================================================================= */
+  var backBtn = root.querySelector("#chn-back");
+  var continueBtn = root.querySelector("#chn-continue");
+  var submitBtn = root.querySelector("#chn-submit");
+
+  function showStep(n, focusHeading) {
+    currentStep = n;
+    root.querySelectorAll(".chn-step").forEach(function (sec) {
+      var isActive = Number(sec.getAttribute("data-step")) === n;
+      sec.classList.toggle("chn-active", isActive);
+      sec.hidden = !isActive;
+    });
+
+    backBtn.hidden = (n === 1);
+    continueBtn.hidden = (n === TOTAL_STEPS);
+    submitBtn.hidden = (n !== TOTAL_STEPS);
+
+    updateProgress();
+    if (n === TOTAL_STEPS) buildReview();
+
+    // scroll the card into view (respects reduced-motion via CSS)
+    var top = root.querySelector(".chn-shell");
+    if (top && top.scrollIntoView) top.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    if (focusHeading !== false) {
+      var heading = root.querySelector('.chn-step[data-step="' + n + '"] .chn-h1');
+      if (heading) heading.focus();
+    }
+  }
+
+  continueBtn.addEventListener("click", function () {
+    if (validateStep(currentStep)) { showStep(currentStep + 1); capturePartialOnAdvance(); }
+  });
+  backBtn.addEventListener("click", function () {
+    hideErrorSummary();
+    if (currentStep > 1) showStep(currentStep - 1);
+  });
+
+  // Prevent Enter from submitting before step 4; treat it as "Continue" instead.
+  form.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter") return;
+    var t = e.target;
+    if (t && t.tagName === "TEXTAREA") return;         // allow newlines in textareas
+    if (currentStep < TOTAL_STEPS) {
+      e.preventDefault();
+      if (validateStep(currentStep)) { showStep(currentStep + 1); capturePartialOnAdvance(); }
+    }
+  });
+
+  /* =========================================================================
+     Validation
+     ========================================================================= */
+  function getControlValue(name) {
+    var el = form.elements[name];
+    if (!el) return "";
+    return (el.value || "").trim();
+  }
+
+  function setFieldError(field, errEl, message) {
+    field.setAttribute("aria-invalid", "true");
+    if (errEl) { errEl.textContent = message; errEl.classList.add("chn-show"); }
+  }
+  function clearFieldError(field, errEl) {
+    field.removeAttribute("aria-invalid");
+    if (errEl) { errEl.textContent = ""; errEl.classList.remove("chn-show"); }
+  }
+  function clearFieldErrorByWrap(wrap) {
+    wrap.querySelectorAll(".chn-field-error").forEach(function (e) { e.textContent = ""; e.classList.remove("chn-show"); });
+    wrap.querySelectorAll("[aria-invalid]").forEach(function (f) { f.removeAttribute("aria-invalid"); });
+  }
+
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Returns {field, label, message} for each problem in a step.
+  function collectStepErrors(step) {
+    var problems = [];
+    var section = root.querySelector('.chn-step[data-step="' + step + '"]');
+    if (!section) return problems;
+
+    function labelFor(field) {
+      var lab = section.querySelector('label[for="' + field.id + '"]');
+      if (lab) return lab.textContent.replace(/\*/g, "").replace(/\(optional\)/i, "").trim();
+      // radiogroup: use aria-labelledby target
+      var grp = field.closest("[role='radiogroup']");
+      if (grp && grp.getAttribute("aria-labelledby")) {
+        var l = root.querySelector("#" + grp.getAttribute("aria-labelledby"));
+        if (l) return l.textContent.replace(/\*/g, "").trim();
+      }
+      return "This field";
+    }
+
+    // 1) required text/select/textarea (skip disabled = hidden conditionals)
+    section.querySelectorAll("input[required], select[required], textarea[required]").forEach(function (f) {
+      if (f.disabled) return;
+      if (f.type === "radio" || f.type === "checkbox") return; // handled below
+      var errEl = f.getAttribute("aria-describedby")
+        ? root.querySelector("#" + f.getAttribute("aria-describedby").split(" ").filter(function (id) { return /-err$/.test(id); })[0])
+        : null;
+      var val = (f.value || "").trim();
+      if (!val) {
+        problems.push({ field: f, errEl: errEl, message: "Please complete this field." , label: labelFor(f)});
+      } else if (f.type === "email" && !EMAIL_RE.test(val)) {
+        problems.push({ field: f, errEl: errEl, message: "Enter a valid email address.", label: labelFor(f) });
+      } else if (f.type === "date" && f.id === "date_of_birth") {
+        var today = new Date(); today.setHours(0,0,0,0);
+        var dob = new Date(val + "T00:00:00");
+        if (isNaN(dob.getTime())) problems.push({ field: f, errEl: errEl, message: "Enter a valid date.", label: labelFor(f) });
+        else if (dob > today) problems.push({ field: f, errEl: errEl, message: "Date of birth can't be in the future.", label: labelFor(f) });
+      } else if (f.type === "tel") {
+        var digits = val.replace(/\D/g, "");
+        if (digits.length < 7) problems.push({ field: f, errEl: errEl, message: "Enter a valid phone number.", label: labelFor(f) });
+        else clearFieldError(f, errEl);
+      } else {
+        clearFieldError(f, errEl);
+      }
+    });
+
+    // 2) required radio groups (Yes/No)
+    var requiredGroups = [];
+    if (step === 1) requiredGroups = ["legal_name_different"];
+    if (step === 2) requiredGroups = ["emergency_contact_authorized"];
+    requiredGroups.forEach(function (name) {
+      var group = form.elements[name];
+      var chosen = group && group.value;
+      var errEl = root.querySelector("#" + name + "-err");
+      var firstInput = section.querySelector('[name="' + name + '"]');
+      if (!chosen) {
+        problems.push({ field: firstInput, errEl: errEl, message: "Please choose an option.", label: labelFor(firstInput), groupName: name });
+      } else if (errEl) { errEl.textContent = ""; errEl.classList.remove("chn-show"); }
+    });
+
+    // 3) required checkbox (accuracy) on step 4
+    if (step === 4) {
+      var acc = root.querySelector("#information_accuracy_confirmed");
+      var accErr = root.querySelector("#information_accuracy_confirmed-err");
+      if (!acc.checked) problems.push({ field: acc, errEl: accErr, message: "Please confirm before submitting.", label: "Accuracy confirmation" });
+      else clearFieldError(acc, accErr);
+    }
+
+    return problems;
+  }
+
+  function validateStep(step) {
+    // clear previous inline errors within this step first
+    var section = root.querySelector('.chn-step[data-step="' + step + '"]');
+    section.querySelectorAll(".chn-field-error").forEach(function (e) { e.classList.remove("chn-show"); e.textContent = ""; });
+    section.querySelectorAll("[aria-invalid]").forEach(function (f) { f.removeAttribute("aria-invalid"); });
+
+    var problems = collectStepErrors(step);
+
+    problems.forEach(function (p) {
+      p.field.setAttribute("aria-invalid", "true");
+      if (p.errEl) { p.errEl.textContent = p.message; p.errEl.classList.add("chn-show"); }
+    });
+
+    if (problems.length === 0) { hideErrorSummary(); return true; }
+
+    renderErrorSummary(problems);
+    // focus first invalid field
+    if (problems[0] && problems[0].field) problems[0].field.focus();
+    return false;
+  }
+
+  /* =========================================================================
+     Error summary
+     ========================================================================= */
+  var errorSummary = root.querySelector("#chn-error-summary");
+  var errorSummaryTitle = root.querySelector("#chn-error-summary-title");
+  var errorSummaryList = root.querySelector("#chn-error-summary-list");
+
+  function renderErrorSummary(problems) {
+    // Only surface the summary when several fields are invalid; a single
+    // inline message is enough for one field.
+    if (problems.length < 2) { hideErrorSummary(); return; }
+    errorSummaryTitle.textContent = "Please review " + problems.length + " fields before continuing";
+    errorSummaryList.textContent = "";
+    problems.forEach(function (p) {
+      var li = document.createElement("li");
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = p.label + " — " + p.message;
+      btn.addEventListener("click", function () { p.field.focus(); });
+      li.appendChild(btn);
+      errorSummaryList.appendChild(li);
+    });
+    errorSummary.classList.add("chn-show");
+    errorSummary.focus();
+  }
+  function hideErrorSummary() {
+    errorSummary.classList.remove("chn-show");
+    errorSummaryList.textContent = "";
+  }
+
+  /* =========================================================================
+     Review summary — built with textContent only (no innerHTML for user data)
+     ========================================================================= */
+  var reviewGroups = [
+    { step: 1, title: "About you", rows: [
+      ["Email", "email"], ["Name you go by", "preferred_name"],
+      ["Legal name different?", "legal_name_different"], ["Legal name", "legal_name"],
+      ["Date of birth", "date_of_birth"],
+      ["Pronouns", "pronouns", "Self-describe", "pronouns_self_describe"],
+      ["Preferred language", "preferred_language", "Other", "preferred_language_other"]
+    ]},
+    { step: 2, title: "Contact & support", rows: [
+      ["Gender identity", "gender_identity", "Self-describe", "gender_identity_self_describe"],
+      ["Sex assigned at birth", "sex_assigned_at_birth"],
+      ["Gender-affirming care", "gender_affirming_care"],
+      ["Relationship status", "relationship_status", "Self-describe", "relationship_status_self_describe"],
+      ["Emergency contact", "emergency_contact_name"],
+      ["Their relationship", "emergency_contact_relationship"],
+      ["Emergency contact phone", "emergency_contact_phone"],
+      ["Authorized for updates", "emergency_contact_authorized"],
+      ["Address line 1", "address_line_1"], ["Address line 2", "address_line_2"],
+      ["City", "city"], ["State", "state"], ["Postal code", "postal_code"],
+      ["Phone", "phone"], ["Message preference", "detailed_messages_permission"]
+    ]},
+    { step: 3, title: "Health details", rows: [
+      ["Insurance status", "insurance_status"],
+      ["Insurance provider", "insurance_provider"], ["Member ID", "insurance_member_id"],
+      ["Reason for visit", "reason_for_visit"],
+      ["Current medications", "current_medications"], ["Allergies", "allergies"]
+    ]}
+  ];
+
+  function readValue(key) {
+    var el = form.elements[key];
+    if (!el) return "";
+    if (el.type === "checkbox") return el.checked ? "Yes" : "";
+    // radios resolve via .value
+    return (el.value || "").trim();
+  }
+
+  function buildReview() {
+    var container = root.querySelector("#chn-review");
+    container.textContent = ""; // clear
+
+    reviewGroups.forEach(function (group) {
+      var box = document.createElement("div");
+      box.className = "chn-review-group";
+
+      var head = document.createElement("div");
+      head.className = "chn-review-head";
+      var h3 = document.createElement("h3");
+      h3.textContent = group.title;
+      var edit = document.createElement("button");
+      edit.type = "button";
+      edit.className = "chn-edit-btn";
+      edit.textContent = "Edit";
+      edit.setAttribute("aria-label", "Edit " + group.title);
+      edit.addEventListener("click", function () { hideErrorSummary(); showStep(group.step); });
+      head.appendChild(h3); head.appendChild(edit);
+      box.appendChild(head);
+
+      var dl = document.createElement("dl");
+      dl.className = "chn-review-list";
+      var anyShown = false;
+
+      group.rows.forEach(function (row) {
+        var label = row[0], key = row[1];
+        var value = readValue(key);
+        // merge self-describe / other into their parent line
+        if (row[2] && value === row[2] && row[3]) {
+          var extra = readValue(row[3]);
+          value = extra ? (row[2] + " — " + extra) : row[2];
+        }
+        // skip self-describe/other standalone keys (already merged) and empty optionals
+        if (key === "pronouns_self_describe" || key === "preferred_language_other" ||
+            key === "gender_identity_self_describe" || key === "relationship_status_self_describe") return;
+        if (!value) return;
+
+        anyShown = true;
+        var dt = document.createElement("dt"); dt.textContent = label;
+        var dd = document.createElement("dd"); dd.textContent = value; // safe: user text as text
+        var wrap = document.createElement("div"); wrap.className = "chn-review-row";
+        wrap.appendChild(dt); wrap.appendChild(dd);
+        dl.appendChild(wrap);
+      });
+
+      if (!anyShown) {
+        var empty = document.createElement("p");
+        empty.className = "chn-review-empty";
+        empty.textContent = "No details added.";
+        dl.appendChild(empty);
+      }
+      box.appendChild(dl);
+      container.appendChild(box);
+    });
+  }
+
+  /* =========================================================================
+     Payload — explicit object; conditional keys excluded when N/A.
+     ========================================================================= */
+  function buildPayload() {
+    function v(key) { return readValue(key); }
+
+    var p = {
+      email: v("email"),
+      preferred_name: v("preferred_name"),
+      legal_name_different: v("legal_name_different"),
+      date_of_birth: v("date_of_birth"),
+      pronouns: v("pronouns"),
+      preferred_language: v("preferred_language"),
+      gender_identity: v("gender_identity"),
+      sex_assigned_at_birth: v("sex_assigned_at_birth"),
+      gender_affirming_care: root.querySelector("#gender_affirming_care").checked,
+      relationship_status: v("relationship_status"),
+      emergency_contact_name: v("emergency_contact_name"),
+      emergency_contact_relationship: v("emergency_contact_relationship"),
+      emergency_contact_phone: v("emergency_contact_phone"),
+      emergency_contact_authorized: v("emergency_contact_authorized"),
+      address_line_1: v("address_line_1"),
+      address_line_2: v("address_line_2"),
+      city: v("city"),
+      state: v("state"),
+      postal_code: v("postal_code"),
+      phone: v("phone"),
+      detailed_messages_permission: v("detailed_messages_permission"),
+      insurance_status: v("insurance_status"),
+      reason_for_visit: v("reason_for_visit"),
+      current_medications: v("current_medications"),
+      allergies: v("allergies"),
+      care_team_notes: v("care_team_notes"),
+      information_accuracy_confirmed: root.querySelector("#information_accuracy_confirmed").checked,
+      form_name: "Community Healthcare Network New Patient Intake",
+      submission_source: "chnnyc_client_website",
+      submission_status: "complete",   // sendPartial() overrides this to "partial"
+      last_step_reached: TOTAL_STEPS
+    };
+
+    // conditional keys — include only when their question applies
+    if (p.legal_name_different === "Yes") p.legal_name = v("legal_name");
+    if (p.pronouns === "Self-describe") p.pronouns_self_describe = v("pronouns_self_describe");
+    if (p.preferred_language === "Other") p.preferred_language_other = v("preferred_language_other");
+    if (p.gender_identity === "Self-describe") p.gender_identity_self_describe = v("gender_identity_self_describe");
+    if (p.relationship_status === "Self-describe") p.relationship_status_self_describe = v("relationship_status_self_describe");
+    if (p.insurance_status === "Insured") {
+      p.insurance_provider = v("insurance_provider");
+      p.insurance_member_id = v("insurance_member_id");
+    }
+    return p;
+  }
+
+  // A partial is only useful if we can key a lead on it (email or a phone).
+  function hasContactKey(p) {
+    return !!((p.email && p.email.length) ||
+              (p.phone && p.phone.length) ||
+              (p.emergency_contact_phone && p.emergency_contact_phone.length));
+  }
+
+  // Send whatever's entered so far. Safe to call often: it no-ops unless there's
+  // new, lead-worthy data, and it never blocks the UI or surfaces errors.
+  function sendPartial(reason) {
+    if (!CAPTURE_PARTIAL || completed || isSubmitting) return;
+    var hp = root.querySelector("#chn_company_url");
+    if (hp && hp.value) return;                     // ignore bots (honeypot filled)
+    var p = buildPayload();
+    if (!hasContactKey(p)) return;                  // nothing to attach a lead to yet
+    p.submission_status = "partial";
+    p.last_step_reached = currentStep;
+    p.partial_reason = reason;
+    var body = JSON.stringify(p);
+    if (body === lastPartialSnapshot) return;        // no new info since last send
+    lastPartialSnapshot = body;
+    try {
+      var blob = new Blob([body], { type: "application/json" });
+      var sent = false;
+      // sendBeacon survives tab-close / navigation; ideal for abandonment.
+      if (navigator.sendBeacon) sent = navigator.sendBeacon(GHL_INBOUND_WEBHOOK_URL, blob);
+      if (!sent) {
+        fetch(GHL_INBOUND_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: body,
+          keepalive: true
+        }).catch(function () {});
+      }
+    } catch (err) { /* capture must never interrupt the patient */ }
+  }
+
+  // Fire a partial when the patient advances a step, and if they leave early.
+  function capturePartialOnAdvance() { sendPartial("step_" + currentStep); }
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden") sendPartial("abandoned");
+  });
+  window.addEventListener("pagehide", function () { sendPartial("abandoned"); });
+
+  /* =========================================================================
+     Submission
+     ========================================================================= */
+  var submitLabel = root.querySelector("#chn-submit-label");
+  var donePanel = root.querySelector("#chn-done");
+  var shell = root.querySelector("#chn-shell");
+
+  function setSubmitting(on) {
+    isSubmitting = on;
+    submitBtn.disabled = on;
+    backBtn.disabled = on;
+    if (on) {
+      submitBtn.innerHTML = '<span class="chn-spinner" aria-hidden="true"></span><span>Submitting securely…</span>';
+    } else {
+      submitBtn.textContent = "";
+      var s = document.createElement("span"); s.id = "chn-submit-label"; s.textContent = "Submit securely";
+      submitBtn.appendChild(s);
+    }
+  }
+
+  function showFailure() {
+    setSubmitting(false);
+    var problems = [{
+      field: submitBtn, errEl: null,
+      label: "Submission", message: "We couldn’t securely submit your information. Please check your connection and try again."
+    }];
+    errorSummaryTitle.textContent = "We couldn’t submit your information";
+    errorSummaryList.textContent = "";
+    var li = document.createElement("li");
+    li.textContent = "We couldn’t securely submit your information. Please check your connection and try again.";
+    errorSummaryList.appendChild(li);
+    var tryLi = document.createElement("li");
+    var tryBtn = document.createElement("button");
+    tryBtn.type = "button"; tryBtn.textContent = "Try again";
+    tryBtn.addEventListener("click", function () { hideErrorSummary(); submitBtn.focus(); });
+    tryLi.appendChild(tryBtn);
+    errorSummaryList.appendChild(tryLi);
+    errorSummary.classList.add("chn-show");
+    errorSummary.focus();
+  }
+
+  function showSuccess() {
+    completed = true;   // stop any partial-capture from firing after completion
+    // Replace the form with the confirmation panel; clear values from the DOM.
+    form.hidden = true;
+    root.querySelector(".chn-aside") && (root.querySelector(".chn-journey").setAttribute("aria-hidden","true"));
+    shell.classList.add("chn-is-complete");
+    // hide the branded aside + mobile head progress on success but keep branding via logo in panel
+    var aside = root.querySelector(".chn-aside"); if (aside) aside.style.display = "none";
+    var mhead = root.querySelector(".chn-mhead"); if (mhead) mhead.style.display = "none";
+    donePanel.hidden = false;
+    try { form.reset(); } catch (e) {}
+    var h = root.querySelector("#chn-done-h"); if (h) h.focus();
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (isSubmitting) return;
+    if (currentStep !== TOTAL_STEPS) { if (validateStep(currentStep)) { showStep(currentStep + 1); capturePartialOnAdvance(); } return; }
+
+    // Validate first — a valid submission must never be silently dropped.
+    if (!validateStep(TOTAL_STEPS)) return;
+
+    // Spam controls (silent): honeypot filled OR implausibly fast completion.
+    // A real patient crossing four steps cannot beat MIN_COMPLETION_MS, so this
+    // only ever trips bots. We show the normal confirmation and send nothing —
+    // bots get no signal and no data leaves the browser.
+    var hp = root.querySelector("#chn_company_url");
+    var tooFast = (Date.now() - loadedAt) < MIN_COMPLETION_MS;
+    if ((hp && hp.value) || tooFast) { showSuccess(); return; }
+
+    // ---- send ----
+    setSubmitting(true);
+    hideErrorSummary();
+
+    var payload = buildPayload();
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, SUBMIT_TIMEOUT_MS);
+
+    fetch(GHL_INBOUND_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+      // NOTE: patient data travels here and nowhere else. Nothing is logged.
+    })
+    .then(function (res) {
+      clearTimeout(timer);
+      if (res.ok) { showSuccess(); }      // any 2xx = success
+      else { showFailure(); }
+    })
+    .catch(function () {
+      clearTimeout(timer);
+      showFailure();                       // network error / timeout / abort
+    });
+  });
+
+  /* ---- init ---- */
+  evaluateConditionals();
+  showStep(1, false);
+
+  /* -------------------------------------------------------------------------
+     OPTIONAL: Cloudflare Turnstile can be added here for stronger bot defense.
+     1) Load https://challenges.cloudflare.com/turnstile/v0/api.js (async, defer)
+     2) Add <div class="cf-turnstile" data-sitekey="YOUR_SITE_KEY"></div> near submit
+     3) Before fetch(), read the token: turnstile.getResponse() and include it as
+        payload.cf_turnstile_token, then verify server-side in your GHL workflow
+        or an intermediate function. Turnstile is privacy-friendly (no cookies).
+     ------------------------------------------------------------------------- */
+})();
+</script>
+</body>
+</html>
