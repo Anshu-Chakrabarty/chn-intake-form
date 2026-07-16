@@ -5,27 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex" />
 <title>New Patient Intake — Community Healthcare Network</title>
-
-<!--
-  ============================================================================
-  Community Healthcare Network — New Patient Intake Form
-  ----------------------------------------------------------------------------
-  PRIVACY / SECURITY NOTE (read before deploying):
-  This file is only the patient-facing form. It does NOT, on its own, make an
-  intake "HIPAA compliant." The surrounding website, CMS, hosting environment,
-  TLS configuration, and any other scripts loaded on the same page must be
-  reviewed separately for privacy and security. A public inbound webhook URL
-  is browser-accessible by design and cannot be kept secret by front-end code.
-  See the honeypot / timing comments and the Turnstile placeholder below.
-  ============================================================================
--->
-
 <style>
-/* ==========================================================================
-   All styles are scoped beneath .chn-intake-form so nothing leaks into a
-   host CMS theme (WordPress content area, etc.) and the theme is less likely
-   to break the form. No bare element selectors (body/input/h1/…) are styled.
-   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
 .chn-intake-form,
 .chn-intake-form *,
@@ -33,176 +25,164 @@
 .chn-intake-form *::after { box-sizing: border-box; }
 
 .chn-intake-form {
-  /* --- Brand tokens (derived from CHN's teal-forward identity on chnnyc.org).
-         Adjust any value with a colour picker against the live site if needed. */
-  --chn-primary:        #007a82;  /* CHN teal — primary actions, headings accent */
-  --chn-primary-strong: #005a60;  /* hover / pressed */
-  --chn-primary-tint:   #e2f1f1;  /* selected field / soft fills */
-  --chn-secondary:      #123138;  /* deep teal-ink for display headings */
-  --chn-accent:         #e4633b;  /* warm coral — used sparingly for warmth */
+  --chn-primary:        #007a82;
+  --chn-primary-strong: #005a60;
+  --chn-primary-tint:   #e2f1f1;
+  --chn-secondary:      #123138;
+  --chn-accent:         #e4633b;
   --chn-accent-soft:    #fdece5;
-
-  --chn-background:      #eef6f6;  /* soft teal page wash */
+  --chn-background:     #eef6f6;
   --chn-surface:        #ffffff;
-  --chn-panel-1:        #00757d;  /* side-panel gradient start */
-  --chn-panel-2:        #0a4a52;  /* side-panel gradient end */
-
+  --chn-panel-1:        #00757d;
+  --chn-panel-2:        #0a4a52;
   --chn-text:           #1c2b30;
   --chn-muted-text:     #566b70;
   --chn-on-panel:       #f2fbfb;
   --chn-on-panel-muted: #bfe0e1;
-
   --chn-border:         #d5e3e3;
   --chn-field-border:   #b4c8ca;
   --chn-success:        #1e7a52;
   --chn-success-soft:   #e7f4ec;
   --chn-error:          #c13525;
   --chn-error-soft:     #fcebe8;
-
   --chn-radius:         16px;
   --chn-radius-sm:      10px;
-  --chn-form-width:     1040px;
-
+  --chn-form-width:     920px;
   --chn-shadow:         0 1px 2px rgba(18,49,56,.06), 0 18px 40px -22px rgba(18,49,56,.35);
   --chn-shadow-sm:      0 1px 2px rgba(18,49,56,.08);
   --chn-ring:           0 0 0 3px rgba(0,122,130,.35);
-
   --chn-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 
-  /* Deliberate: no external web-font is loaded. A privacy-first health form
-     should not make third-party font requests from the patient's browser. */
   font-family: var(--chn-font-body);
   color: var(--chn-text);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
   background: var(--chn-background);
   background-image:
     radial-gradient(120% 90% at 100% 0%, rgba(0,122,130,.10), transparent 60%),
     radial-gradient(90% 70% at 0% 100%, rgba(228,99,59,.06), transparent 55%);
-  padding: clamp(16px, 4vw, 56px) clamp(12px, 3vw, 32px);
-  min-height: 100%;
+  min-height: 100vh;
+  padding: 0 0 clamp(20px, 4vw, 40px);
 }
 
-/* ---- Shell / card layout -------------------------------------------------- */
-.chn-intake-form .chn-shell {
-  width: 100%;
-  max-width: var(--chn-form-width);
-  margin: 0 auto;
-  background: var(--chn-surface);
-  border: 1px solid var(--chn-border);
-  border-radius: calc(var(--chn-radius) + 6px);
-  box-shadow: var(--chn-shadow);
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 340px 1fr;
-}
-.chn-intake-form .chn-shell.chn-is-complete { grid-template-columns: 1fr; }
-
-/* ---- Branded side panel (the signature "care journey") -------------------- */
-.chn-intake-form .chn-aside {
-  position: relative;
+/* ---- Top header ----------------------------------------------------------- */
+.chn-intake-form .chn-top-header {
   background: linear-gradient(160deg, var(--chn-panel-1), var(--chn-panel-2));
   color: var(--chn-on-panel);
-  padding: 32px 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 26px;
+  padding: clamp(18px, 4vw, 28px) clamp(16px, 4vw, 32px);
+  position: relative;
+  overflow: hidden;
 }
-.chn-intake-form .chn-aside::after {
+.chn-intake-form .chn-top-header::after {
   content: "";
   position: absolute; inset: 0;
-  background: radial-gradient(140% 60% at 100% 0%, rgba(228,99,59,.28), transparent 55%);
+  background: radial-gradient(140% 60% at 100% 0%, rgba(228,99,59,.22), transparent 55%);
   pointer-events: none;
 }
-.chn-intake-form .chn-aside > * { position: relative; z-index: 1; }
-
+.chn-intake-form .chn-top-inner {
+  position: relative; z-index: 1;
+  max-width: var(--chn-form-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.chn-intake-form .chn-top-brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
 .chn-intake-form .chn-logo-wrap {
   background: #fff;
   border-radius: var(--chn-radius-sm);
-  padding: 12px 14px;
-  align-self: flex-start;
+  padding: 10px 12px;
+  flex-shrink: 0;
   box-shadow: var(--chn-shadow-sm);
 }
-.chn-intake-form .chn-logo { display: block; max-width: 190px; width: 100%; height: auto; }
+.chn-intake-form .chn-logo { display: block; max-width: 160px; width: 100%; height: auto; }
 .chn-intake-form .chn-logo-fallback {
-  font-weight: 800; letter-spacing: .01em; color: var(--chn-secondary);
-  font-size: 15px; line-height: 1.2;
+  font-weight: 800; color: var(--chn-secondary); font-size: 14px; line-height: 1.2;
 }
-.chn-intake-form .chn-logo-fallback span { display: block; color: var(--chn-primary); font-size: 22px; }
+.chn-intake-form .chn-logo-fallback span { display: block; color: var(--chn-primary); font-size: 19px; }
+.chn-intake-form .chn-top-text { min-width: 0; }
+.chn-intake-form .chn-top-eyebrow {
+  text-transform: uppercase; letter-spacing: .12em; font-size: 11px;
+  font-weight: 700; color: var(--chn-on-panel-muted); margin: 0 0 4px;
+}
+.chn-intake-form .chn-top-title {
+  font-size: clamp(17px, 3.5vw, 22px); font-weight: 700; color: #fff;
+  margin: 0; line-height: 1.25;
+}
+.chn-intake-form .chn-top-phone {
+  color: #fff; font-weight: 700; text-decoration: none; font-size: 15px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.chn-intake-form .chn-top-phone small {
+  display: block; font-weight: 500; color: var(--chn-on-panel-muted);
+  font-size: 11px; margin-bottom: 2px;
+}
+.chn-intake-form .chn-top-phone:hover { text-decoration: underline; }
 
-.chn-intake-form .chn-aside-eyebrow {
-  text-transform: uppercase; letter-spacing: .14em; font-size: 12px;
-  font-weight: 700; color: var(--chn-on-panel-muted); margin: 0 0 8px;
+/* ---- Horizontal step indicator ------------------------------------------ */
+.chn-intake-form .chn-steps-wrap {
+  background: var(--chn-surface);
+  border-bottom: 1px solid var(--chn-border);
+  box-shadow: var(--chn-shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
-.chn-intake-form .chn-aside-title {
-  font-size: 23px; line-height: 1.2; font-weight: 750; margin: 0;
-  letter-spacing: -.01em; color: #fff;
+.chn-intake-form .chn-steps-inner {
+  max-width: var(--chn-form-width);
+  margin: 0 auto;
+  padding: 14px clamp(12px, 3vw, 24px) 16px;
 }
-
-/* vertical stepper */
-.chn-intake-form .chn-journey { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 2px; }
-.chn-intake-form .chn-journey li {
-  display: grid; grid-template-columns: 34px 1fr; align-items: center;
-  gap: 12px; padding: 9px 0; position: relative;
-}
-.chn-intake-form .chn-journey li::before { /* connector line */
-  content: ""; position: absolute; left: 16px; top: 34px; bottom: -9px;
-  width: 2px; background: rgba(255,255,255,.18);
-}
-.chn-intake-form .chn-journey li:last-child::before { display: none; }
-.chn-intake-form .chn-jnode {
-  width: 34px; height: 34px; border-radius: 50%;
-  display: grid; place-items: center; font-weight: 700; font-size: 14px;
-  background: rgba(255,255,255,.14); color: var(--chn-on-panel);
-  border: 2px solid rgba(255,255,255,.28); transition: transform .2s ease, background .2s ease;
-}
-.chn-intake-form .chn-jlabel { font-size: 15px; font-weight: 600; color: var(--chn-on-panel-muted); }
-.chn-intake-form .chn-journey li[data-state="current"] .chn-jnode {
-  background: var(--chn-accent); border-color: #fff; color: #fff; transform: scale(1.05);
-  box-shadow: 0 0 0 4px rgba(228,99,59,.28);
-}
-.chn-intake-form .chn-journey li[data-state="current"] .chn-jlabel { color: #fff; }
-.chn-intake-form .chn-journey li[data-state="done"] .chn-jnode {
-  background: #fff; border-color: #fff; color: var(--chn-primary-strong);
-}
-.chn-intake-form .chn-journey li[data-state="done"] .chn-jlabel { color: var(--chn-on-panel); }
-
-.chn-intake-form .chn-aside-reassure {
-  margin-top: auto; font-size: 13.5px; color: var(--chn-on-panel-muted);
-  border-top: 1px solid rgba(255,255,255,.16); padding-top: 18px;
-}
-.chn-intake-form .chn-aside-reassure strong { color: #fff; font-weight: 650; }
-.chn-intake-form .chn-aside-phone {
-  display: inline-flex; align-items: baseline; gap: 6px; margin-top: 10px;
-  color: #fff; font-weight: 700; text-decoration: none; font-size: 16px;
-}
-.chn-intake-form .chn-aside-phone:hover { text-decoration: underline; }
-.chn-intake-form .chn-aside-phone small { font-weight: 500; color: var(--chn-on-panel-muted); font-size: 12px; }
-
-/* ---- Mobile header (hidden on desktop) ------------------------------------ */
-.chn-intake-form .chn-mhead { display: none; }
-
-/* ---- Main / form body ----------------------------------------------------- */
-.chn-intake-form .chn-main { padding: clamp(22px, 3.4vw, 40px); min-width: 0; }
-
 .chn-intake-form .chn-step-meta {
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  margin-bottom: 6px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-bottom: 10px; flex-wrap: wrap;
 }
 .chn-intake-form .chn-step-count {
-  font-size: 13px; font-weight: 700; letter-spacing: .04em; color: var(--chn-primary);
-  text-transform: uppercase;
+  font-size: 12px; font-weight: 700; letter-spacing: .04em;
+  color: var(--chn-primary); text-transform: uppercase;
 }
-.chn-intake-form .chn-support-inline { font-size: 13px; color: var(--chn-muted-text); }
+.chn-intake-form .chn-support-inline { font-size: 12px; color: var(--chn-muted-text); }
 .chn-intake-form .chn-support-inline a { color: var(--chn-primary-strong); font-weight: 600; text-decoration: none; }
 .chn-intake-form .chn-support-inline a:hover { text-decoration: underline; }
 
-/* progress bar */
+.chn-intake-form .chn-hsteps {
+  list-style: none; margin: 0; padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.chn-intake-form .chn-hsteps li {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; text-align: center; min-width: 0;
+}
+.chn-intake-form .chn-hnode {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700; font-size: 13px;
+  background: var(--chn-primary-tint); color: var(--chn-muted-text);
+  border: 2px solid var(--chn-border); transition: all .2s ease; flex-shrink: 0;
+}
+.chn-intake-form .chn-hlabel {
+  font-size: clamp(10px, 2.5vw, 12px); font-weight: 600;
+  color: var(--chn-muted-text); line-height: 1.2;
+  word-break: break-word; hyphens: auto;
+}
+.chn-intake-form .chn-hsteps li[data-state="current"] .chn-hnode {
+  background: var(--chn-primary); border-color: var(--chn-primary);
+  color: #fff; transform: scale(1.08);
+  box-shadow: 0 0 0 3px rgba(0,122,130,.2);
+}
+.chn-intake-form .chn-hsteps li[data-state="current"] .chn-hlabel { color: var(--chn-primary-strong); }
+.chn-intake-form .chn-hsteps li[data-state="done"] .chn-hnode {
+  background: var(--chn-success-soft); border-color: var(--chn-success); color: var(--chn-success);
+}
+.chn-intake-form .chn-hsteps li[data-state="done"] .chn-hlabel { color: var(--chn-text); }
+
 .chn-intake-form .chn-progress {
-  height: 8px; border-radius: 999px; background: var(--chn-primary-tint);
-  overflow: hidden; margin: 12px 0 26px;
+  height: 6px; border-radius: 999px; background: var(--chn-primary-tint);
+  overflow: hidden; margin-top: 12px;
 }
 .chn-intake-form .chn-progress-fill {
   height: 100%; width: 25%; border-radius: 999px;
@@ -210,15 +190,36 @@
   transition: width .38s cubic-bezier(.4,0,.2,1);
 }
 
+/* ---- Shell / form card ---------------------------------------------------- */
+.chn-intake-form .chn-shell {
+  width: 100%;
+  max-width: var(--chn-form-width);
+  margin: clamp(16px, 3vw, 28px) auto 0;
+  background: var(--chn-surface);
+  border: 1px solid var(--chn-border);
+  border-radius: var(--chn-radius);
+  box-shadow: var(--chn-shadow);
+  overflow: hidden;
+}
+.chn-intake-form .chn-shell.chn-is-complete {
+  max-width: 640px;
+  margin-top: clamp(24px, 5vw, 48px);
+}
+
+.chn-intake-form .chn-main { padding: clamp(20px, 4vw, 36px); min-width: 0; }
+
 .chn-intake-form .chn-eyebrow {
-  text-transform: uppercase; letter-spacing: .13em; font-size: 12px; font-weight: 700;
-  color: var(--chn-accent); margin: 0 0 8px;
+  text-transform: uppercase; letter-spacing: .13em; font-size: 11px; font-weight: 700;
+  color: var(--chn-accent); margin: 0 0 6px;
 }
 .chn-intake-form .chn-h1 {
-  font-size: clamp(24px, 3.4vw, 31px); line-height: 1.15; letter-spacing: -.015em;
-  font-weight: 780; color: var(--chn-secondary); margin: 0 0 10px;
+  font-size: clamp(22px, 5vw, 28px); line-height: 1.2; letter-spacing: -.015em;
+  font-weight: 750; color: var(--chn-secondary); margin: 0 0 10px;
 }
-.chn-intake-form .chn-intro { font-size: 15.5px; color: var(--chn-muted-text); margin: 0 0 4px; max-width: 60ch; }
+.chn-intake-form .chn-intro {
+  font-size: clamp(14px, 3.5vw, 15.5px); color: var(--chn-muted-text);
+  margin: 0 0 4px; max-width: 62ch;
+}
 .chn-intake-form .chn-intro .chn-req-key { color: var(--chn-text); font-weight: 600; }
 
 .chn-intake-form .chn-step { display: none; }
@@ -228,23 +229,27 @@
 .chn-intake-form .chn-step-head { margin-bottom: 18px; }
 .chn-intake-form .chn-fieldset {
   border: 1px solid var(--chn-border); border-radius: var(--chn-radius);
-  padding: 20px 20px 8px; margin: 0 0 20px; background: #fbfdfd;
+  padding: clamp(14px, 3vw, 20px) clamp(14px, 3vw, 20px) 6px;
+  margin: 0 0 18px; background: #fbfdfd;
 }
 .chn-intake-form .chn-fieldset > legend {
-  font-weight: 720; font-size: 16px; color: var(--chn-secondary);
+  font-weight: 700; font-size: 15px; color: var(--chn-secondary);
   padding: 0 8px; margin-left: -8px;
 }
 .chn-intake-form .chn-section-help {
-  font-size: 13.5px; color: var(--chn-muted-text); margin: 2px 0 16px; max-width: 62ch;
+  font-size: 13.5px; color: var(--chn-muted-text); margin: 2px 0 14px; max-width: 62ch;
 }
 
-/* field grid */
-.chn-intake-form .chn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
-.chn-intake-form .chn-field { margin-bottom: 16px; min-width: 0; }
+.chn-intake-form .chn-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 16px;
+}
+.chn-intake-form .chn-field { margin-bottom: 14px; min-width: 0; }
 .chn-intake-form .chn-field.chn-col-2 { grid-column: 1 / -1; }
 
 .chn-intake-form .chn-label {
-  display: block; font-weight: 600; font-size: 14.5px; color: var(--chn-text); margin-bottom: 6px;
+  display: block; font-weight: 600; font-size: 14px; color: var(--chn-text); margin-bottom: 6px;
 }
 .chn-intake-form .chn-opt { color: var(--chn-muted-text); font-weight: 500; }
 .chn-intake-form .chn-req { color: var(--chn-accent); font-weight: 700; margin-left: 2px; }
@@ -255,8 +260,8 @@
 .chn-intake-form .chn-textarea {
   width: 100%; font: inherit; color: var(--chn-text); background: var(--chn-surface);
   border: 1.5px solid var(--chn-field-border); border-radius: var(--chn-radius-sm);
-  padding: 12px 14px; transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
-  appearance: none; -webkit-appearance: none;
+  padding: 12px 14px; transition: border-color .15s ease, box-shadow .15s ease;
+  appearance: none; -webkit-appearance: none; max-width: 100%;
 }
 .chn-intake-form .chn-textarea { min-height: 108px; resize: vertical; line-height: 1.5; }
 .chn-intake-form .chn-select {
@@ -273,35 +278,34 @@
 .chn-intake-form .chn-textarea:focus-visible {
   outline: none; border-color: var(--chn-primary); box-shadow: var(--chn-ring);
 }
-.chn-intake-form [aria-invalid="true"] { border-color: var(--chn-error) !important; background: #fff; }
-.chn-intake-form [aria-invalid="true"]:focus-visible { box-shadow: 0 0 0 3px rgba(193,53,37,.28) !important; }
+.chn-intake-form [aria-invalid="true"] { border-color: var(--chn-error) !important; }
 
 .chn-intake-form .chn-field-error {
   display: none; align-items: center; gap: 6px;
   color: var(--chn-error); font-size: 13px; font-weight: 600; margin-top: 7px;
 }
 .chn-intake-form .chn-field-error.chn-show { display: flex; }
-.chn-intake-form .chn-field-error::before { content: "!"; display: inline-grid; place-items: center;
-  width: 16px; height: 16px; border-radius: 50%; background: var(--chn-error); color: #fff; font-size: 11px; flex: none; }
+.chn-intake-form .chn-field-error::before {
+  content: "!"; display: inline-grid; place-items: center;
+  width: 16px; height: 16px; border-radius: 50%; background: var(--chn-error);
+  color: #fff; font-size: 11px; flex: none;
+}
 
-/* segmented (Yes/No) controls */
-.chn-intake-form .chn-segment { display: inline-flex; gap: 8px; flex-wrap: wrap; }
-.chn-intake-form .chn-segment .chn-seg-opt { position: relative; }
+.chn-intake-form .chn-segment { display: inline-flex; gap: 8px; flex-wrap: wrap; width: 100%; }
+.chn-intake-form .chn-segment .chn-seg-opt { position: relative; flex: 1 1 96px; }
 .chn-intake-form .chn-segment input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .chn-intake-form .chn-segment label {
-  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
   border: 1.5px solid var(--chn-field-border); border-radius: var(--chn-radius-sm);
-  padding: 11px 22px; font-weight: 600; font-size: 15px; color: var(--chn-text);
-  background: var(--chn-surface); transition: all .15s ease; min-width: 96px; justify-content: center;
+  padding: 11px 16px; font-weight: 600; font-size: 15px; color: var(--chn-text);
+  background: var(--chn-surface); transition: all .15s ease; width: 100%;
 }
 .chn-intake-form .chn-segment label:hover { border-color: var(--chn-primary); }
 .chn-intake-form .chn-segment input:checked + label {
-  border-color: var(--chn-primary); background: var(--chn-primary-tint); color: var(--chn-primary-strong);
-  box-shadow: inset 0 0 0 1px var(--chn-primary);
+  border-color: var(--chn-primary); background: var(--chn-primary-tint);
+  color: var(--chn-primary-strong); box-shadow: inset 0 0 0 1px var(--chn-primary);
 }
-.chn-intake-form .chn-segment input:focus-visible + label { box-shadow: var(--chn-ring); }
 
-/* radio cards (stacked, longer text) */
 .chn-intake-form .chn-cards { display: grid; gap: 10px; }
 .chn-intake-form .chn-card { position: relative; }
 .chn-intake-form .chn-card input { position: absolute; opacity: 0; width: 1px; height: 1px; }
@@ -313,306 +317,229 @@
 }
 .chn-intake-form .chn-card label::before {
   content: ""; flex: none; width: 20px; height: 20px; border-radius: 50%; margin-top: 1px;
-  border: 2px solid var(--chn-field-border); transition: all .15s ease;
+  border: 2px solid var(--chn-field-border);
 }
-.chn-intake-form .chn-card label:hover { border-color: var(--chn-primary); }
 .chn-intake-form .chn-card input:checked + label {
   border-color: var(--chn-primary); background: var(--chn-primary-tint);
 }
 .chn-intake-form .chn-card input:checked + label::before {
-  border-color: var(--chn-primary); background: var(--chn-primary);
-  box-shadow: inset 0 0 0 4px #fff;
+  border-color: var(--chn-primary); background: var(--chn-primary); box-shadow: inset 0 0 0 4px #fff;
 }
-.chn-intake-form .chn-card input:focus-visible + label { box-shadow: var(--chn-ring); }
 
-/* single checkbox */
 .chn-intake-form .chn-check {
   display: flex; align-items: flex-start; gap: 12px; cursor: pointer;
   border: 1.5px solid var(--chn-field-border); border-radius: var(--chn-radius-sm);
-  padding: 14px 16px; background: var(--chn-surface); transition: all .15s ease; font-size: 14.5px; line-height: 1.45;
+  padding: 14px 16px; background: var(--chn-surface); font-size: 14.5px; line-height: 1.45;
 }
-.chn-intake-form .chn-check:hover { border-color: var(--chn-primary); }
 .chn-intake-form .chn-check input {
-  flex: none; width: 20px; height: 20px; margin-top: 1px; accent-color: var(--chn-primary); cursor: pointer;
+  flex: none; width: 20px; height: 20px; margin-top: 1px;
+  accent-color: var(--chn-primary); cursor: pointer;
 }
-.chn-intake-form .chn-check:has(input:focus-visible) { box-shadow: var(--chn-ring); border-color: var(--chn-primary); }
 .chn-intake-form .chn-check:has(input:checked) { background: var(--chn-primary-tint); border-color: var(--chn-primary); }
 
-/* conditional reveal */
 .chn-intake-form .chn-conditional { display: none; }
-.chn-intake-form .chn-conditional.chn-reveal {
-  display: block; animation: chn-reveal .28s ease both;
-}
+.chn-intake-form .chn-conditional.chn-reveal { display: block; animation: chn-reveal .28s ease both; }
 @keyframes chn-reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
-/* error summary */
 .chn-intake-form .chn-error-summary {
   display: none; border: 1.5px solid var(--chn-error); background: var(--chn-error-soft);
-  border-radius: var(--chn-radius-sm); padding: 16px 18px; margin-bottom: 22px;
+  border-radius: var(--chn-radius-sm); padding: 16px 18px; margin-bottom: 20px;
 }
 .chn-intake-form .chn-error-summary.chn-show { display: block; }
 .chn-intake-form .chn-error-summary h2 { margin: 0 0 8px; font-size: 15px; color: var(--chn-error); font-weight: 700; }
 .chn-intake-form .chn-error-summary ul { margin: 0; padding-left: 18px; }
-.chn-intake-form .chn-error-summary li { margin: 4px 0; }
 .chn-intake-form .chn-error-summary button {
-  background: none; border: none; color: var(--chn-error); font: inherit; font-weight: 600;
-  text-decoration: underline; cursor: pointer; padding: 0; text-align: left;
+  background: none; border: none; color: var(--chn-error); font: inherit;
+  font-weight: 600; text-decoration: underline; cursor: pointer; padding: 0;
 }
 
-/* review */
 .chn-intake-form .chn-review-group {
-  border: 1px solid var(--chn-border); border-radius: var(--chn-radius); overflow: hidden; margin-bottom: 16px;
+  border: 1px solid var(--chn-border); border-radius: var(--chn-radius);
+  overflow: hidden; margin-bottom: 14px;
 }
 .chn-intake-form .chn-review-head {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   background: #f4fafa; padding: 12px 16px; border-bottom: 1px solid var(--chn-border);
+  flex-wrap: wrap;
 }
 .chn-intake-form .chn-review-head h3 { margin: 0; font-size: 15px; color: var(--chn-secondary); font-weight: 700; }
 .chn-intake-form .chn-edit-btn {
   background: #fff; border: 1.5px solid var(--chn-field-border); border-radius: 8px;
   color: var(--chn-primary-strong); font: inherit; font-weight: 600; font-size: 13px;
-  padding: 6px 14px; cursor: pointer; transition: all .15s ease;
+  padding: 6px 14px; cursor: pointer;
 }
-.chn-intake-form .chn-edit-btn:hover { border-color: var(--chn-primary); background: var(--chn-primary-tint); }
-.chn-intake-form .chn-edit-btn:focus-visible { outline: none; box-shadow: var(--chn-ring); }
 .chn-intake-form .chn-review-list { margin: 0; padding: 6px 16px 14px; }
-.chn-intake-form .chn-review-row { display: grid; grid-template-columns: 42% 1fr; gap: 12px; padding: 9px 0; border-bottom: 1px dashed var(--chn-border); }
+.chn-intake-form .chn-review-row {
+  display: grid; grid-template-columns: minmax(0, 38%) minmax(0, 1fr);
+  gap: 8px 12px; padding: 9px 0; border-bottom: 1px dashed var(--chn-border);
+}
 .chn-intake-form .chn-review-row:last-child { border-bottom: none; }
-.chn-intake-form .chn-review-row dt { color: var(--chn-muted-text); font-size: 14px; }
-.chn-intake-form .chn-review-row dd { margin: 0; color: var(--chn-text); font-size: 14.5px; font-weight: 550; word-break: break-word; }
-.chn-intake-form .chn-review-empty { color: var(--chn-muted-text); font-size: 14px; padding: 8px 0; }
+.chn-intake-form .chn-review-row dt { color: var(--chn-muted-text); font-size: 13px; }
+.chn-intake-form .chn-review-row dd { margin: 0; color: var(--chn-text); font-size: 14px; font-weight: 550; word-break: break-word; }
 
-/* nav buttons */
 .chn-intake-form .chn-nav {
-  display: flex; align-items: center; justify-content: space-between; gap: 14px;
-  margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--chn-border);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--chn-border);
+  flex-wrap: wrap;
 }
 .chn-intake-form .chn-btn {
-  font: inherit; font-weight: 650; font-size: 15.5px; border-radius: var(--chn-radius-sm);
-  padding: 13px 26px; cursor: pointer; border: 1.5px solid transparent; transition: all .16s ease;
+  font: inherit; font-weight: 650; font-size: 15px; border-radius: var(--chn-radius-sm);
+  padding: 13px 24px; cursor: pointer; border: 1.5px solid transparent;
   display: inline-flex; align-items: center; gap: 9px; justify-content: center;
+  min-height: 48px;
 }
-.chn-intake-form .chn-btn:focus-visible { outline: none; box-shadow: var(--chn-ring); }
 .chn-intake-form .chn-btn-primary { background: var(--chn-primary); color: #fff; }
 .chn-intake-form .chn-btn-primary:hover:not(:disabled) { background: var(--chn-primary-strong); }
 .chn-intake-form .chn-btn-primary:disabled { opacity: .62; cursor: not-allowed; }
 .chn-intake-form .chn-btn-ghost { background: #fff; color: var(--chn-primary-strong); border-color: var(--chn-field-border); }
-.chn-intake-form .chn-btn-ghost:hover { border-color: var(--chn-primary); background: var(--chn-primary-tint); }
-/* The hidden attribute must always win, even over display:inline-flex above
-   and over any host-theme rule. This is what actually toggles Back / Continue
-   / Submit and the step sections. */
 .chn-intake-form [hidden] { display: none !important; }
 .chn-intake-form .chn-spinner {
-  width: 17px; height: 17px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,.45);
-  border-top-color: #fff; animation: chn-spin .7s linear infinite;
+  width: 17px; height: 17px; border-radius: 50%;
+  border: 2.5px solid rgba(255,255,255,.45); border-top-color: #fff;
+  animation: chn-spin .7s linear infinite;
 }
 @keyframes chn-spin { to { transform: rotate(360deg); } }
 
-/* honeypot: visually hidden but present in the DOM for bots to fill */
 .chn-intake-form .chn-hp {
   position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
-/* footer */
 .chn-intake-form .chn-foot {
-  text-align: center; margin: 22px auto 0; max-width: var(--chn-form-width);
-  font-size: 13px; color: var(--chn-muted-text);
+  text-align: center; margin: 20px auto 0; max-width: var(--chn-form-width);
+  font-size: 13px; color: var(--chn-muted-text); padding: 0 16px;
 }
 .chn-intake-form .chn-foot a { color: var(--chn-primary-strong); font-weight: 600; text-decoration: none; }
-.chn-intake-form .chn-foot a:hover { text-decoration: underline; }
 
-/* success / confirmation */
-.chn-intake-form .chn-done { padding: clamp(30px, 6vw, 64px) clamp(22px, 4vw, 56px); text-align: center; }
+/* ---- Thank you page ------------------------------------------------------- */
+.chn-intake-form .chn-done {
+  padding: clamp(36px, 8vw, 72px) clamp(20px, 5vw, 48px);
+  text-align: center;
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 .chn-intake-form .chn-done-badge {
-  width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 22px;
+  width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 24px;
   background: var(--chn-success-soft); display: grid; place-items: center;
 }
-.chn-intake-form .chn-done-badge svg { width: 40px; height: 40px; stroke: var(--chn-success); }
-.chn-intake-form .chn-done h2 { font-size: clamp(24px, 3.6vw, 30px); color: var(--chn-secondary); margin: 0 0 12px; letter-spacing: -.01em; }
-.chn-intake-form .chn-done p { color: var(--chn-muted-text); font-size: 16px; max-width: 52ch; margin: 0 auto 10px; }
-.chn-intake-form .chn-done .chn-done-support { margin-top: 20px; font-size: 14px; }
+.chn-intake-form .chn-done-badge svg { width: 42px; height: 42px; stroke: var(--chn-success); }
+.chn-intake-form .chn-done h2 {
+  font-size: clamp(24px, 5vw, 32px); color: var(--chn-secondary);
+  margin: 0 0 14px; letter-spacing: -.01em; max-width: 20ch;
+}
+.chn-intake-form .chn-done p {
+  color: var(--chn-muted-text); font-size: clamp(15px, 3.5vw, 17px);
+  max-width: 48ch; margin: 0 auto 12px; line-height: 1.6;
+}
+.chn-intake-form .chn-done .chn-done-email-note {
+  background: var(--chn-primary-tint); border-radius: var(--chn-radius-sm);
+  padding: 14px 18px; margin: 20px 0 0; font-size: 14px; color: var(--chn-primary-strong);
+  max-width: 42ch;
+}
+.chn-intake-form .chn-done .chn-done-support { margin-top: 24px; font-size: 14px; }
 .chn-intake-form .chn-done .chn-done-support a { color: var(--chn-primary-strong); font-weight: 700; text-decoration: none; }
 
-.chn-intake-form .chn-sr { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-
-/* ==========================================================================
-   CMS HARDENING — re-assert the properties a host theme is most likely to
-   clobber with bare-element !important rules (input {...!important}, h1 {...}).
-   All still scoped to .chn-intake-form. Remove this block if your theme is
-   already well-behaved and you want fully overridable fields.
-   ========================================================================== */
-.chn-intake-form { letter-spacing: normal !important; }
-.chn-intake-form .chn-input,
-.chn-intake-form .chn-select,
-.chn-intake-form .chn-textarea,
-.chn-intake-form .chn-btn,
-.chn-intake-form .chn-segment label,
-.chn-intake-form .chn-card label,
-.chn-intake-form .chn-check {
-  box-sizing: border-box !important;
-  font-family: var(--chn-font-body) !important;
-  letter-spacing: normal !important;
-  text-transform: none !important;
-}
-.chn-intake-form .chn-input,
-.chn-intake-form .chn-select,
-.chn-intake-form .chn-textarea {
-  width: 100% !important;
-  -webkit-appearance: none !important; appearance: none !important;
-  background-color: var(--chn-surface) !important;
-  color: var(--chn-text) !important;
-  border: 1.5px solid var(--chn-field-border) !important;
-  border-radius: var(--chn-radius-sm) !important;
-  line-height: 1.5 !important;
-}
-.chn-intake-form .chn-select {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%23566b70' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='5 8 10 13 15 8'/></svg>") !important;
-  background-repeat: no-repeat !important; background-position: right 12px center !important;
-}
-.chn-intake-form .chn-textarea { min-height: 108px !important; }
-.chn-intake-form .chn-input:hover,
-.chn-intake-form .chn-select:hover,
-.chn-intake-form .chn-textarea:hover { border-color: var(--chn-primary) !important; }
-.chn-intake-form .chn-input:focus-visible,
-.chn-intake-form .chn-select:focus-visible,
-.chn-intake-form .chn-textarea:focus-visible { border-color: var(--chn-primary) !important; box-shadow: var(--chn-ring) !important; }
-.chn-intake-form [aria-invalid="true"] { border-color: var(--chn-error) !important; }
-.chn-intake-form .chn-btn { -webkit-appearance: none !important; appearance: none !important; }
-.chn-intake-form .chn-h1,
-.chn-intake-form .chn-aside-title,
-.chn-intake-form .chn-done h2,
-.chn-intake-form .chn-review-head h3,
-.chn-intake-form .chn-error-summary h2 {
-  text-transform: none !important; font-family: var(--chn-font-body) !important;
+.chn-intake-form .chn-sr {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
 /* ---- Responsive ----------------------------------------------------------- */
-@media (max-width: 860px) {
-  .chn-intake-form { padding: 0 0 24px; }
-  .chn-intake-form .chn-shell { grid-template-columns: 1fr; border-radius: 0; border-left: 0; border-right: 0; box-shadow: none; }
-  .chn-intake-form .chn-aside { display: none; }           /* desktop panel hidden */
-  .chn-intake-form .chn-mhead { display: block; }          /* mobile header shown */
-  .chn-intake-form .chn-main { padding: 20px 16px 26px; }
+@media (max-width: 640px) {
   .chn-intake-form .chn-grid { grid-template-columns: 1fr; }
-  .chn-intake-form .chn-review-row { grid-template-columns: 1fr; gap: 2px; }
-  .chn-intake-form .chn-review-row dt { font-size: 13px; }
+  .chn-intake-form .chn-top-inner { flex-direction: column; align-items: flex-start; }
+  .chn-intake-form .chn-top-phone { align-self: flex-start; }
+  .chn-intake-form .chn-shell { border-radius: 0; border-left: 0; border-right: 0; margin-top: 0; }
   .chn-intake-form .chn-nav { flex-direction: column-reverse; }
   .chn-intake-form .chn-nav .chn-btn { width: 100%; }
-  /* the teal mobile header already shows step + progress, so drop the desktop row */
-  .chn-intake-form .chn-step-meta,
-  .chn-intake-form .chn-progress { display: none; }
-  .chn-intake-form .chn-segment { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
-  .chn-intake-form .chn-segment label { min-width: 0; width: 100%; }
-  .chn-intake-form .chn-foot { padding: 0 16px; }
+  .chn-intake-form .chn-review-row { grid-template-columns: 1fr; gap: 2px; }
+  .chn-intake-form .chn-hlabel { font-size: 10px; }
+  .chn-intake-form .chn-hnode { width: 28px; height: 28px; font-size: 12px; }
 }
 
-.chn-intake-form .chn-mhead {
-  background: linear-gradient(160deg, var(--chn-panel-1), var(--chn-panel-2));
-  color: var(--chn-on-panel); padding: 20px 16px 18px;
-}
-.chn-intake-form .chn-mhead .chn-logo-wrap { margin-bottom: 14px; }
-.chn-intake-form .chn-mhead .chn-mstep { font-size: 13px; font-weight: 700; letter-spacing: .04em; color: var(--chn-on-panel-muted); text-transform: uppercase; }
-.chn-intake-form .chn-mhead .chn-mtitle { font-size: 18px; font-weight: 700; color: #fff; margin: 3px 0 12px; }
-.chn-intake-form .chn-mbar { height: 7px; border-radius: 999px; background: rgba(255,255,255,.22); overflow: hidden; }
-.chn-intake-form .chn-mbar-fill { height: 100%; width: 25%; background: #fff; border-radius: 999px; transition: width .38s cubic-bezier(.4,0,.2,1); }
-
-@media (max-width: 400px) {
-  .chn-intake-form .chn-fieldset { padding: 16px 14px 4px; }
-  .chn-intake-form .chn-segment { grid-template-columns: 1fr; }
+@media (max-width: 380px) {
+  .chn-intake-form .chn-hsteps { gap: 4px; }
+  .chn-intake-form .chn-hlabel { display: none; }
+  .chn-intake-form .chn-hsteps li[data-state="current"] .chn-hlabel { display: block; }
+  .chn-intake-form .chn-segment .chn-seg-opt { flex: 1 1 100%; }
 }
 
-/* Respect reduced-motion */
 @media (prefers-reduced-motion: reduce) {
-  .chn-intake-form *,
-  .chn-intake-form *::before,
-  .chn-intake-form *::after {
-    animation-duration: .001ms !important; animation-iteration-count: 1 !important;
-    transition-duration: .001ms !important; scroll-behavior: auto !important;
+  .chn-intake-form *, .chn-intake-form *::before, .chn-intake-form *::after {
+    animation-duration: .001ms !important; transition-duration: .001ms !important;
   }
 }
 </style>
 </head>
 <body>
 
-<!-- ======================= FORM WRAPPER (scoped root) ======================= -->
 <div class="chn-intake-form">
-  <div class="chn-shell" id="chn-shell">
-
-    <!-- ---------- Branded side panel (desktop) ---------- -->
-    <aside class="chn-aside">
-      <div class="chn-logo-wrap">
-        <img class="chn-logo" id="chn-logo" alt="Community Healthcare Network" />
-        <div class="chn-logo-fallback" id="chn-logo-fallback" hidden>
-          Community Healthcare <span>Network</span>
-        </div>
-      </div>
-
-      <div>
-        <p class="chn-aside-eyebrow">New patient intake</p>
-        <h2 class="chn-aside-title">Welcome. Let's get you ready for your visit.</h2>
-      </div>
-
-      <ol class="chn-journey" id="chn-journey" aria-hidden="true">
-        <li data-step="1"><span class="chn-jnode">1</span><span class="chn-jlabel">About you</span></li>
-        <li data-step="2"><span class="chn-jnode">2</span><span class="chn-jlabel">Contact &amp; support</span></li>
-        <li data-step="3"><span class="chn-jnode">3</span><span class="chn-jlabel">Health details</span></li>
-        <li data-step="4"><span class="chn-jnode">4</span><span class="chn-jlabel">Review</span></li>
-      </ol>
-
-      <div class="chn-aside-reassure">
-        <strong>Your information is submitted securely</strong> to the Community Healthcare Network care team.
-        <a class="chn-aside-phone" href="tel:+18662468259">866-246-8259<br><small>Need help completing this form?</small></a>
-      </div>
-    </aside>
-
-    <!-- ---------- Main column ---------- -->
-    <div class="chn-main">
-
-      <!-- Mobile header (shown < 860px) -->
-      <div class="chn-mhead">
+  <!-- Top header -->
+  <header class="chn-top-header">
+    <div class="chn-top-inner">
+      <div class="chn-top-brand">
         <div class="chn-logo-wrap">
-          <img class="chn-logo" id="chn-logo-m" alt="Community Healthcare Network" />
-          <div class="chn-logo-fallback" id="chn-logo-fallback-m" hidden>Community Healthcare <span>Network</span></div>
+          <img class="chn-logo" id="chn-logo" alt="Community Healthcare Network" />
+          <div class="chn-logo-fallback" id="chn-logo-fallback" hidden>
+            Community Healthcare <span>Network</span>
+          </div>
         </div>
-        <p class="chn-mstep" id="chn-mstep">Step 1 of 4</p>
-        <p class="chn-mtitle" id="chn-mtitle">About you</p>
-        <div class="chn-mbar" role="progressbar" aria-label="Intake progress"
-             aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="chn-mprogressbar">
-          <div class="chn-mbar-fill" id="chn-mbar-fill"></div>
+        <div class="chn-top-text">
+          <p class="chn-top-eyebrow">New patient intake</p>
+          <h1 class="chn-top-title">Welcome — let's get you ready for your visit</h1>
         </div>
       </div>
+      <a class="chn-top-phone" href="tel:+18662468259">
+        <small>Need help?</small>
+        866-246-8259
+      </a>
+    </div>
+  </header>
+
+  <!-- Step indicator (visible during form; hidden on thank-you) -->
+  <div class="chn-steps-wrap" id="chn-steps-wrap">
+    <div class="chn-steps-inner">
+      <div class="chn-step-meta">
+        <span class="chn-step-count" id="chn-step-count">Step 1 of 4 · About you</span>
+        <span class="chn-support-inline">Questions? <a href="tel:+18662468259">866-246-8259</a></span>
+      </div>
+      <ol class="chn-hsteps" id="chn-hsteps" aria-label="Form progress">
+        <li data-step="1"><span class="chn-hnode">1</span><span class="chn-hlabel">About you</span></li>
+        <li data-step="2"><span class="chn-hnode">2</span><span class="chn-hlabel">Identity &amp; contact</span></li>
+        <li data-step="3"><span class="chn-hnode">3</span><span class="chn-hlabel">Health details</span></li>
+        <li data-step="4"><span class="chn-hnode">4</span><span class="chn-hlabel">Review</span></li>
+      </ol>
+      <div class="chn-progress" role="progressbar" aria-label="Intake progress"
+           aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="chn-progressbar">
+        <div class="chn-progress-fill" id="chn-progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chn-shell" id="chn-shell">
+    <div class="chn-main">
 
       <form id="chn-form" novalidate>
 
-        <!-- desktop step meta + progress -->
-        <div class="chn-step-meta">
-          <span class="chn-step-count" id="chn-step-count">Step 1 of 4 · About you</span>
-          <span class="chn-support-inline">Need help? <a href="tel:+18662468259">866-246-8259</a></span>
-        </div>
-        <div class="chn-progress" role="progressbar" aria-label="Intake progress"
-             aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="chn-progressbar">
-          <div class="chn-progress-fill" id="chn-progress-fill"></div>
-        </div>
-
-        <!-- error summary (shared) -->
         <div class="chn-error-summary" id="chn-error-summary" role="alert" tabindex="-1">
           <h2 id="chn-error-summary-title">Please review these fields</h2>
           <ul id="chn-error-summary-list"></ul>
         </div>
 
-        <!-- ================= STEP 1 — ABOUT YOU ================= -->
+        <!-- STEP 1 -->
         <section class="chn-step chn-active" data-step="1" aria-labelledby="chn-s1-h">
           <div class="chn-step-head">
-            <p class="chn-eyebrow">New patient intake</p>
-            <h1 class="chn-h1" id="chn-s1-h" tabindex="-1">Tell us a little about yourself</h1>
-            <p class="chn-intro">This secure intake form helps the Community Healthcare Network care team prepare for your visit.
-              <span class="chn-req-key">Required fields are marked with an asterisk&nbsp;(<span class="chn-req">*</span>).</span>
-              Optional questions help us provide respectful and personalized care and may be skipped.</p>
+            <h2 class="chn-h1" id="chn-s1-h" tabindex="-1">Tell us a little about yourself</h2>
+            <p class="chn-intro">This secure form helps our care team prepare for your visit.
+              <span class="chn-req-key">Required fields are marked with an asterisk (<span class="chn-req">*</span>).</span>
+              Optional questions may be skipped.</p>
           </div>
 
           <fieldset class="chn-fieldset">
-            <legend>About you</legend>
+            <legend>Basic information</legend>
             <p class="chn-section-help">Names and pronouns, so we get it right from the first hello.</p>
 
             <div class="chn-grid">
@@ -622,7 +549,6 @@
                        inputmode="email" required aria-describedby="email-err" />
                 <p class="chn-field-error" id="email-err"></p>
               </div>
-
               <div class="chn-field">
                 <label class="chn-label" for="preferred_name">Name you go by <span class="chn-req" aria-hidden="true">*</span></label>
                 <input class="chn-input" type="text" id="preferred_name" name="preferred_name" autocomplete="name"
@@ -635,20 +561,17 @@
               <label class="chn-label" id="lnd-label">Is your legal name different from the name you go by? <span class="chn-req" aria-hidden="true">*</span></label>
               <div class="chn-segment" role="radiogroup" aria-labelledby="lnd-label" aria-describedby="legal_name_different-err">
                 <span class="chn-seg-opt">
-                  <input type="radio" id="lnd-yes" name="legal_name_different" value="Yes"
-                         data-reveals="wrap-legal-name" />
+                  <input type="radio" id="lnd-yes" name="legal_name_different" value="Yes" data-reveals="wrap-legal-name" />
                   <label for="lnd-yes">Yes</label>
                 </span>
                 <span class="chn-seg-opt">
-                  <input type="radio" id="lnd-no" name="legal_name_different" value="No"
-                         data-reveals="wrap-legal-name" />
+                  <input type="radio" id="lnd-no" name="legal_name_different" value="No" data-reveals="wrap-legal-name" />
                   <label for="lnd-no">No</label>
                 </span>
               </div>
               <p class="chn-field-error" id="legal_name_different-err"></p>
             </div>
 
-            <!-- conditional: legal name (shows when Yes) -->
             <div class="chn-field chn-col-2 chn-conditional" id="wrap-legal-name"
                  data-show-when="legal_name_different" data-show-value="Yes">
               <label class="chn-label" for="legal_name">Legal name <span class="chn-req" aria-hidden="true">*</span></label>
@@ -664,7 +587,6 @@
                        required aria-describedby="date_of_birth-err" />
                 <p class="chn-field-error" id="date_of_birth-err"></p>
               </div>
-
               <div class="chn-field">
                 <label class="chn-label" for="pronouns">Pronouns <span class="chn-opt">(optional)</span></label>
                 <select class="chn-select" id="pronouns" name="pronouns" data-reveals="wrap-pronouns-self" data-reveal-value="Self-describe">
@@ -712,17 +634,16 @@
           </fieldset>
         </section>
 
-        <!-- ================= STEP 2 — CONTACT & SUPPORT ================= -->
+        <!-- STEP 2 -->
         <section class="chn-step" data-step="2" aria-labelledby="chn-s2-h" hidden>
           <div class="chn-step-head">
-            <p class="chn-eyebrow">New patient intake</p>
-            <h1 class="chn-h1" id="chn-s2-h" tabindex="-1">Contact &amp; support</h1>
-            <p class="chn-intro">A few details about you and the people in your corner, so we can care for you well and reach the right person if we ever need to.</p>
+            <h2 class="chn-h1" id="chn-s2-h" tabindex="-1">Identity &amp; contact details</h2>
+            <p class="chn-intro">Help us understand your identity and how to reach you and your support people.</p>
           </div>
 
           <fieldset class="chn-fieldset">
             <legend>Gender and sex information</legend>
-            <p class="chn-section-help">We ask both because they may affect screenings and medications differently. Your answers are used to support appropriate care, not to make assumptions about your identity.</p>
+            <p class="chn-section-help">We ask both because they may affect screenings and medications differently.</p>
 
             <div class="chn-field chn-col-2">
               <label class="chn-label" for="gender_identity">Gender identity <span class="chn-opt">(optional)</span></label>
@@ -760,9 +681,7 @@
             <div class="chn-field chn-col-2">
               <label class="chn-check" for="gender_affirming_care">
                 <input type="checkbox" id="gender_affirming_care" name="gender_affirming_care" />
-                <span>I am currently receiving gender-affirming hormone therapy or have had gender-affirming surgery.
-                  <span class="chn-hint" style="margin:4px 0 0">This may help the care team interpret laboratory results correctly and avoid irrelevant questions.</span>
-                </span>
+                <span>I am currently receiving gender-affirming hormone therapy or have had gender-affirming surgery.</span>
               </label>
             </div>
           </fieldset>
@@ -800,24 +719,22 @@
                        required aria-describedby="emergency_contact_name-err" />
                 <p class="chn-field-error" id="emergency_contact_name-err"></p>
               </div>
-
               <div class="chn-field">
                 <label class="chn-label" for="emergency_contact_relationship">Their relationship to you <span class="chn-req" aria-hidden="true">*</span></label>
                 <input class="chn-input" type="text" id="emergency_contact_relationship" name="emergency_contact_relationship" autocomplete="off"
                        required aria-describedby="ecr-hint emergency_contact_relationship-err" />
-                <span class="chn-hint" id="ecr-hint">Describe it however makes sense to you. This does not need to be a legal or blood relationship.</span>
+                <span class="chn-hint" id="ecr-hint">Describe it however makes sense to you.</span>
                 <p class="chn-field-error" id="emergency_contact_relationship-err"></p>
               </div>
             </div>
 
             <div class="chn-grid">
               <div class="chn-field">
-                <label class="chn-label" for="emergency_contact_phone">Emergency contact phone number <span class="chn-req" aria-hidden="true">*</span></label>
+                <label class="chn-label" for="emergency_contact_phone">Emergency contact phone <span class="chn-req" aria-hidden="true">*</span></label>
                 <input class="chn-input" type="tel" id="emergency_contact_phone" name="emergency_contact_phone"
                        autocomplete="tel" inputmode="tel" required aria-describedby="emergency_contact_phone-err" />
                 <p class="chn-field-error" id="emergency_contact_phone-err"></p>
               </div>
-
               <div class="chn-field">
                 <label class="chn-label" id="eca-label">Authorized to receive updates about your care? <span class="chn-req" aria-hidden="true">*</span></label>
                 <div class="chn-segment" role="radiogroup" aria-labelledby="eca-label" aria-describedby="emergency_contact_authorized-err">
@@ -857,13 +774,11 @@
                        required aria-describedby="city-err" />
                 <p class="chn-field-error" id="city-err"></p>
               </div>
-
               <div class="chn-field">
                 <label class="chn-label" for="state">State <span class="chn-req" aria-hidden="true">*</span></label>
                 <select class="chn-select" id="state" name="state" autocomplete="address-level1"
                         required aria-describedby="state-err">
                   <option value="">Select</option>
-                  <!-- options injected by JS (US states + territories) -->
                 </select>
                 <p class="chn-field-error" id="state-err"></p>
               </div>
@@ -876,7 +791,6 @@
                        inputmode="numeric" required aria-describedby="postal_code-err" />
                 <p class="chn-field-error" id="postal_code-err"></p>
               </div>
-
               <div class="chn-field">
                 <label class="chn-label" for="phone">Phone number <span class="chn-req" aria-hidden="true">*</span></label>
                 <input class="chn-input" type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel"
@@ -886,7 +800,7 @@
             </div>
 
             <div class="chn-field chn-col-2">
-              <label class="chn-label" id="dmp-label">Is it safe to leave detailed voicemails or messages at this phone number or email? <span class="chn-opt">(optional)</span></label>
+              <label class="chn-label" id="dmp-label">Is it safe to leave detailed voicemails or messages? <span class="chn-opt">(optional)</span></label>
               <div class="chn-cards" role="radiogroup" aria-labelledby="dmp-label">
                 <span class="chn-card">
                   <input type="radio" id="dmp-1" name="detailed_messages_permission" value="Yes, both phone and email are private to me" />
@@ -909,17 +823,15 @@
           </fieldset>
         </section>
 
-        <!-- ================= STEP 3 — HEALTH DETAILS ================= -->
+        <!-- STEP 3 -->
         <section class="chn-step" data-step="3" aria-labelledby="chn-s3-h" hidden>
           <div class="chn-step-head">
-            <p class="chn-eyebrow">New patient intake</p>
-            <h1 class="chn-h1" id="chn-s3-h" tabindex="-1">Health details</h1>
-            <p class="chn-intro">Just enough for the care team to prepare. Share what you're comfortable with — you can always add more at your visit.</p>
+            <h2 class="chn-h1" id="chn-s3-h" tabindex="-1">Health details</h2>
+            <p class="chn-intro">Just enough for the care team to prepare. Share what you're comfortable with.</p>
           </div>
 
           <fieldset class="chn-fieldset">
             <legend>Insurance</legend>
-
             <div class="chn-field chn-col-2">
               <label class="chn-label" for="insurance_status">Insurance status <span class="chn-opt">(optional)</span></label>
               <select class="chn-select" id="insurance_status" name="insurance_status"
@@ -963,22 +875,21 @@
               <label class="chn-label" for="current_medications">Current medications <span class="chn-opt">(optional)</span></label>
               <textarea class="chn-textarea" id="current_medications" name="current_medications"
                         aria-describedby="meds-hint"></textarea>
-              <span class="chn-hint" id="meds-hint">Include prescriptions, over-the-counter medications and supplements, where relevant.</span>
+              <span class="chn-hint" id="meds-hint">Include prescriptions, over-the-counter medications and supplements.</span>
             </div>
 
             <div class="chn-field chn-col-2">
               <label class="chn-label" for="allergies">Allergies <span class="chn-opt">(optional)</span></label>
               <textarea class="chn-textarea" id="allergies" name="allergies" aria-describedby="allergies-hint"></textarea>
-              <span class="chn-hint" id="allergies-hint">Include medication, food or other known allergies, where relevant.</span>
+              <span class="chn-hint" id="allergies-hint">Include medication, food or other known allergies.</span>
             </div>
           </fieldset>
         </section>
 
-        <!-- ================= STEP 4 — REVIEW ================= -->
+        <!-- STEP 4 -->
         <section class="chn-step" data-step="4" aria-labelledby="chn-s4-h" hidden>
           <div class="chn-step-head">
-            <p class="chn-eyebrow">New patient intake</p>
-            <h1 class="chn-h1" id="chn-s4-h" tabindex="-1">Almost finished</h1>
+            <h2 class="chn-h1" id="chn-s4-h" tabindex="-1">Almost finished</h2>
             <p class="chn-intro">Review the information below before securely submitting it to the care team.</p>
           </div>
 
@@ -987,12 +898,10 @@
             <div class="chn-field chn-col-2">
               <label class="chn-label" for="care_team_notes">Anything else <span class="chn-opt">(optional)</span></label>
               <textarea class="chn-textarea" id="care_team_notes" name="care_team_notes"
-                        placeholder="Share anything else you'd like the care team to know before your visit." aria-describedby="notes-hint"></textarea>
-              <span class="chn-hint" id="notes-hint">Share anything else you would like the care team to know before your visit.</span>
+                        placeholder="Share anything else you'd like the care team to know before your visit."></textarea>
             </div>
           </fieldset>
 
-          <!-- review summary, built safely by JS -->
           <div id="chn-review" aria-live="polite"></div>
 
           <fieldset class="chn-fieldset" style="margin-top:20px">
@@ -1001,20 +910,18 @@
               <label class="chn-check" for="information_accuracy_confirmed">
                 <input type="checkbox" id="information_accuracy_confirmed" name="information_accuracy_confirmed"
                        required aria-describedby="information_accuracy_confirmed-err" />
-                <span>I confirm that the information provided is accurate to the best of my knowledge. I understand that I may request corrections or updates at any time.</span>
+                <span>I confirm that the information provided is accurate to the best of my knowledge.</span>
               </label>
               <p class="chn-field-error" id="information_accuracy_confirmed-err"></p>
             </div>
           </fieldset>
         </section>
 
-        <!-- Honeypot: hidden from people & assistive tech; bots tend to fill it. -->
         <div class="chn-hp" aria-hidden="true">
           <label for="chn_company_url">Company website (leave blank)</label>
           <input type="text" id="chn_company_url" name="chn_company_url" tabindex="-1" autocomplete="off" />
         </div>
 
-        <!-- ---------- Navigation ---------- -->
         <div class="chn-nav">
           <button type="button" class="chn-btn chn-btn-ghost" id="chn-back" hidden>← Back</button>
           <button type="button" class="chn-btn chn-btn-primary" id="chn-continue">Continue →</button>
@@ -1024,98 +931,73 @@
         </div>
       </form>
 
-      <!-- ---------- Success / confirmation (revealed on success) ---------- -->
+      <!-- Thank you page -->
       <div class="chn-done" id="chn-done" hidden>
-        <div class="chn-logo-wrap" style="margin:0 auto 24px; display:inline-block;">
-          <img class="chn-logo" id="chn-logo-done" alt="Community Healthcare Network" style="margin:0 auto;" />
-          <div class="chn-logo-fallback" id="chn-logo-fallback-done" hidden>Community Healthcare <span>Network</span></div>
-        </div>
         <div class="chn-done-badge">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M20 6L9 17l-5-5" />
           </svg>
         </div>
-        <h2 tabindex="-1" id="chn-done-h">Thank you — your information has been submitted</h2>
-        <p>The Community Healthcare Network care team has received your intake information and will review it before your visit.</p>
+        <h2 tabindex="-1" id="chn-done-h">Thank you!</h2>
+        <p>Your intake information has been submitted securely to the Community Healthcare Network care team.</p>
+        <p class="chn-done-email-note" id="chn-done-email-note" hidden>
+          A confirmation email has been sent to <strong id="chn-done-email"></strong>.
+        </p>
         <p class="chn-done-support">Need assistance? Call <a href="tel:+18662468259">866-246-8259</a>.</p>
       </div>
 
-    </div><!-- /main -->
-  </div><!-- /shell -->
+    </div>
+  </div>
 
   <p class="chn-foot">
     Community Healthcare Network · Patient support <a href="tel:+18662468259">866-246-8259</a>
   </p>
-</div><!-- /.chn-intake-form -->
+</div>
 
 <script>
 (function () {
   "use strict";
 
-  /* =========================================================================
-     CONFIGURATION — the two values you are most likely to change are here.
-     ========================================================================= */
-
-  // 1) Paste your GoHighLevel INBOUND WEBHOOK URL here (Workflow → Inbound Webhook).
-  //    This is NOT a secret and NOT the authenticated Contacts API. Do not put any
-  //    OAuth token / API key / private integration token anywhere in this file.
-  // Points at the same-origin Vercel proxy (api/intake.js), NOT at GHL directly.
-  // The proxy forwards to GHL server-side, so the real webhook URL stays hidden
-  // and there is no cross-origin/CORS problem for either the final submit or the
-  // sendBeacon partial. To revert to a direct-to-GHL setup, paste the webhook here.
+  /* Both enabled on final submit:
+     1) GHL via same-origin /api/intake proxy
+     2) Emails via FormSubmit (owner + patient) — no env vars / packages */
   var GHL_INBOUND_WEBHOOK_URL = "/api/intake";
-
-  // 2) Official CHN logo. Default below is the logo CHN uses on its own hosted
-  //    intake survey (stable public CDN). Swap for the chnnyc.org asset if you
-  //    prefer, or set to "" to show the text fallback wordmark.
+  var OWNER_EMAIL = "anshu@brandmirchi.com";
+  var EMAIL_ENDPOINT = "https://formsubmit.co/ajax/" + OWNER_EMAIL;
   var CHN_LOGO_URL = "https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/5KlfHXZqugsbkXJAvQ9N/media/6a562b1f46ff6bf801788cb0.png";
-
-  var SUBMIT_TIMEOUT_MS = 15000;   // AbortController timeout for the webhook call
-  var MIN_COMPLETION_MS = 4000;    // faster than this = treated as a bot, dropped
+  var SUBMIT_TIMEOUT_MS = 15000;
+  var MIN_COMPLETION_MS = 4000;
   var TOTAL_STEPS = 4;
-
-  // 3) PARTIAL CAPTURE. When true, whatever the patient has entered is sent to
-  //    the SAME webhook each time they finish a step and if they leave the page
-  //    early — so an abandoned form still creates/updates a lead. Each partial is
-  //    tagged submission_status:"partial" with last_step_reached, and the final
-  //    submit is tagged "complete". GHL de-dupes on email/phone, so one contact
-  //    is progressively enriched. Set to false to only ever send on final submit.
-  //    NOTE: this transmits entered health info before the patient clicks the
-  //    final confirmation, so treat "partial" leads as not-yet-consented intake
-  //    in your GHL workflow (separate stage, no clinical use until completed).
   var CAPTURE_PARTIAL = true;
 
-  /* =========================================================================
-     Scope everything to this form instance.
-     ========================================================================= */
   var root = document.querySelector(".chn-intake-form");
   var form = root.querySelector("#chn-form");
   var loadedAt = Date.now();
   var currentStep = 1;
   var isSubmitting = false;
-  var completed = false;         // true after a successful final submit; stops partials
-  var lastPartialSnapshot = "";  // skip re-sending an identical partial
+  var completed = false;
+  var lastPartialSnapshot = "";
+  var submittedEmail = "";
 
-  var stepNames = { 1: "About you", 2: "Contact & support", 3: "Health details", 4: "Review" };
+  var stepNames = {
+    1: "About you",
+    2: "Identity & contact",
+    3: "Health details",
+    4: "Review"
+  };
 
-  /* ---- Logo setup ---- */
-  (function setupLogos() {
-    var pairs = [["#chn-logo", "#chn-logo-fallback"], ["#chn-logo-m", "#chn-logo-fallback-m"],
-                 ["#chn-logo-done", "#chn-logo-fallback-done"]];
-    pairs.forEach(function (p) {
-      var img = root.querySelector(p[0]);
-      var fb = root.querySelector(p[1]);
-      if (!img) return;
-      if (CHN_LOGO_URL) {
-        img.src = CHN_LOGO_URL;
-        img.onerror = function () { img.hidden = true; if (fb) fb.hidden = false; };
-      } else {
-        img.hidden = true; if (fb) fb.hidden = false;
-      }
-    });
+  (function setupLogo() {
+    var img = root.querySelector("#chn-logo");
+    var fb = root.querySelector("#chn-logo-fallback");
+    if (!img) return;
+    if (CHN_LOGO_URL) {
+      img.src = CHN_LOGO_URL;
+      img.onerror = function () { img.hidden = true; if (fb) fb.hidden = false; };
+    } else {
+      img.hidden = true; if (fb) fb.hidden = false;
+    }
   })();
 
-  /* ---- Populate US state / territory options ---- */
   (function fillStates() {
     var states = [
       ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
@@ -1138,10 +1020,6 @@
     });
   })();
 
-  /* =========================================================================
-     Conditional fields — reveal/hide, and disable hidden inputs so their
-     values never submit and they drop out of tab order / validation.
-     ========================================================================= */
   function innerFields(wrap) {
     return Array.prototype.slice.call(wrap.querySelectorAll("input, select, textarea"));
   }
@@ -1157,7 +1035,6 @@
     } else {
       wrap.classList.remove("chn-reveal");
       fields.forEach(function (f) {
-        // clear stale hidden values so they can't be submitted or shown in review
         if (f.type === "checkbox" || f.type === "radio") { f.checked = false; }
         else { f.value = ""; }
         f.required = false;
@@ -1173,53 +1050,31 @@
       var controlName = wrap.getAttribute("data-show-when");
       var showValue = wrap.getAttribute("data-show-value");
       var control = form.elements[controlName];
-      var value = "";
-      if (control) {
-        if (control instanceof RadioNodeList || (control.length && !control.tagName)) {
-          value = control.value;
-        } else {
-          value = control.value;
-        }
-      }
+      var value = control ? control.value : "";
       setConditional(wrap, value === showValue);
     });
   }
 
-  // React to any control that drives a conditional
   form.addEventListener("change", function (e) {
     if (e.target.matches("[data-reveals], [name]")) evaluateConditionals();
   });
 
-  /* =========================================================================
-     Progress + step display
-     ========================================================================= */
   var progressFill = root.querySelector("#chn-progress-fill");
   var progressBar = root.querySelector("#chn-progressbar");
-  var mbarFill = root.querySelector("#chn-mbar-fill");
   var stepCount = root.querySelector("#chn-step-count");
-  var mStep = root.querySelector("#chn-mstep");
-  var mTitle = root.querySelector("#chn-mtitle");
 
   function updateProgress() {
     var pct = (currentStep / TOTAL_STEPS) * 100;
     progressFill.style.width = pct + "%";
-    mbarFill.style.width = pct + "%";
     progressBar.setAttribute("aria-valuenow", String(currentStep));
-    var mpb = root.querySelector("#chn-mprogressbar");
-    if (mpb) mpb.setAttribute("aria-valuenow", String(currentStep));
     stepCount.textContent = "Step " + currentStep + " of " + TOTAL_STEPS + " · " + stepNames[currentStep];
-    mStep.textContent = "Step " + currentStep + " of " + TOTAL_STEPS;
-    mTitle.textContent = stepNames[currentStep];
 
-    root.querySelectorAll("#chn-journey li").forEach(function (li) {
+    root.querySelectorAll("#chn-hsteps li").forEach(function (li) {
       var n = Number(li.getAttribute("data-step"));
       li.setAttribute("data-state", n < currentStep ? "done" : (n === currentStep ? "current" : "upcoming"));
     });
   }
 
-  /* =========================================================================
-     Navigation
-     ========================================================================= */
   var backBtn = root.querySelector("#chn-back");
   var continueBtn = root.querySelector("#chn-continue");
   var submitBtn = root.querySelector("#chn-submit");
@@ -1239,9 +1094,7 @@
     updateProgress();
     if (n === TOTAL_STEPS) buildReview();
 
-    // scroll the card into view (respects reduced-motion via CSS)
-    var top = root.querySelector(".chn-shell");
-    if (top && top.scrollIntoView) top.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
 
     if (focusHeading !== false) {
       var heading = root.querySelector('.chn-step[data-step="' + n + '"] .chn-h1');
@@ -1257,30 +1110,23 @@
     if (currentStep > 1) showStep(currentStep - 1);
   });
 
-  // Prevent Enter from submitting before step 4; treat it as "Continue" instead.
   form.addEventListener("keydown", function (e) {
     if (e.key !== "Enter") return;
     var t = e.target;
-    if (t && t.tagName === "TEXTAREA") return;         // allow newlines in textareas
+    if (t && t.tagName === "TEXTAREA") return;
     if (currentStep < TOTAL_STEPS) {
       e.preventDefault();
       if (validateStep(currentStep)) { showStep(currentStep + 1); capturePartialOnAdvance(); }
     }
   });
 
-  /* =========================================================================
-     Validation
-     ========================================================================= */
-  function getControlValue(name) {
-    var el = form.elements[name];
+  function readValue(key) {
+    var el = form.elements[key];
     if (!el) return "";
+    if (el.type === "checkbox") return el.checked ? "Yes" : "";
     return (el.value || "").trim();
   }
 
-  function setFieldError(field, errEl, message) {
-    field.setAttribute("aria-invalid", "true");
-    if (errEl) { errEl.textContent = message; errEl.classList.add("chn-show"); }
-  }
   function clearFieldError(field, errEl) {
     field.removeAttribute("aria-invalid");
     if (errEl) { errEl.textContent = ""; errEl.classList.remove("chn-show"); }
@@ -1292,7 +1138,6 @@
 
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // Returns {field, label, message} for each problem in a step.
   function collectStepErrors(step) {
     var problems = [];
     var section = root.querySelector('.chn-step[data-step="' + step + '"]');
@@ -1301,7 +1146,6 @@
     function labelFor(field) {
       var lab = section.querySelector('label[for="' + field.id + '"]');
       if (lab) return lab.textContent.replace(/\*/g, "").replace(/\(optional\)/i, "").trim();
-      // radiogroup: use aria-labelledby target
       var grp = field.closest("[role='radiogroup']");
       if (grp && grp.getAttribute("aria-labelledby")) {
         var l = root.querySelector("#" + grp.getAttribute("aria-labelledby"));
@@ -1310,16 +1154,15 @@
       return "This field";
     }
 
-    // 1) required text/select/textarea (skip disabled = hidden conditionals)
     section.querySelectorAll("input[required], select[required], textarea[required]").forEach(function (f) {
       if (f.disabled) return;
-      if (f.type === "radio" || f.type === "checkbox") return; // handled below
+      if (f.type === "radio" || f.type === "checkbox") return;
       var errEl = f.getAttribute("aria-describedby")
         ? root.querySelector("#" + f.getAttribute("aria-describedby").split(" ").filter(function (id) { return /-err$/.test(id); })[0])
         : null;
       var val = (f.value || "").trim();
       if (!val) {
-        problems.push({ field: f, errEl: errEl, message: "Please complete this field." , label: labelFor(f)});
+        problems.push({ field: f, errEl: errEl, message: "Please complete this field.", label: labelFor(f) });
       } else if (f.type === "email" && !EMAIL_RE.test(val)) {
         problems.push({ field: f, errEl: errEl, message: "Enter a valid email address.", label: labelFor(f) });
       } else if (f.type === "date" && f.id === "date_of_birth") {
@@ -1330,13 +1173,9 @@
       } else if (f.type === "tel") {
         var digits = val.replace(/\D/g, "");
         if (digits.length < 7) problems.push({ field: f, errEl: errEl, message: "Enter a valid phone number.", label: labelFor(f) });
-        else clearFieldError(f, errEl);
-      } else {
-        clearFieldError(f, errEl);
       }
     });
 
-    // 2) required radio groups (Yes/No)
     var requiredGroups = [];
     if (step === 1) requiredGroups = ["legal_name_different"];
     if (step === 2) requiredGroups = ["emergency_contact_authorized"];
@@ -1346,52 +1185,41 @@
       var errEl = root.querySelector("#" + name + "-err");
       var firstInput = section.querySelector('[name="' + name + '"]');
       if (!chosen) {
-        problems.push({ field: firstInput, errEl: errEl, message: "Please choose an option.", label: labelFor(firstInput), groupName: name });
-      } else if (errEl) { errEl.textContent = ""; errEl.classList.remove("chn-show"); }
+        problems.push({ field: firstInput, errEl: errEl, message: "Please choose an option.", label: labelFor(firstInput) });
+      }
     });
 
-    // 3) required checkbox (accuracy) on step 4
     if (step === 4) {
       var acc = root.querySelector("#information_accuracy_confirmed");
       var accErr = root.querySelector("#information_accuracy_confirmed-err");
       if (!acc.checked) problems.push({ field: acc, errEl: accErr, message: "Please confirm before submitting.", label: "Accuracy confirmation" });
-      else clearFieldError(acc, accErr);
     }
 
     return problems;
   }
 
   function validateStep(step) {
-    // clear previous inline errors within this step first
     var section = root.querySelector('.chn-step[data-step="' + step + '"]');
     section.querySelectorAll(".chn-field-error").forEach(function (e) { e.classList.remove("chn-show"); e.textContent = ""; });
     section.querySelectorAll("[aria-invalid]").forEach(function (f) { f.removeAttribute("aria-invalid"); });
 
     var problems = collectStepErrors(step);
-
     problems.forEach(function (p) {
       p.field.setAttribute("aria-invalid", "true");
       if (p.errEl) { p.errEl.textContent = p.message; p.errEl.classList.add("chn-show"); }
     });
 
     if (problems.length === 0) { hideErrorSummary(); return true; }
-
     renderErrorSummary(problems);
-    // focus first invalid field
     if (problems[0] && problems[0].field) problems[0].field.focus();
     return false;
   }
 
-  /* =========================================================================
-     Error summary
-     ========================================================================= */
   var errorSummary = root.querySelector("#chn-error-summary");
   var errorSummaryTitle = root.querySelector("#chn-error-summary-title");
   var errorSummaryList = root.querySelector("#chn-error-summary-list");
 
   function renderErrorSummary(problems) {
-    // Only surface the summary when several fields are invalid; a single
-    // inline message is enough for one field.
     if (problems.length < 2) { hideErrorSummary(); return; }
     errorSummaryTitle.textContent = "Please review " + problems.length + " fields before continuing";
     errorSummaryList.textContent = "";
@@ -1412,9 +1240,6 @@
     errorSummaryList.textContent = "";
   }
 
-  /* =========================================================================
-     Review summary — built with textContent only (no innerHTML for user data)
-     ========================================================================= */
   var reviewGroups = [
     { step: 1, title: "About you", rows: [
       ["Email", "email"], ["Name you go by", "preferred_name"],
@@ -1423,7 +1248,7 @@
       ["Pronouns", "pronouns", "Self-describe", "pronouns_self_describe"],
       ["Preferred language", "preferred_language", "Other", "preferred_language_other"]
     ]},
-    { step: 2, title: "Contact & support", rows: [
+    { step: 2, title: "Identity & contact", rows: [
       ["Gender identity", "gender_identity", "Self-describe", "gender_identity_self_describe"],
       ["Sex assigned at birth", "sex_assigned_at_birth"],
       ["Gender-affirming care", "gender_affirming_care"],
@@ -1444,17 +1269,9 @@
     ]}
   ];
 
-  function readValue(key) {
-    var el = form.elements[key];
-    if (!el) return "";
-    if (el.type === "checkbox") return el.checked ? "Yes" : "";
-    // radios resolve via .value
-    return (el.value || "").trim();
-  }
-
   function buildReview() {
     var container = root.querySelector("#chn-review");
-    container.textContent = ""; // clear
+    container.textContent = "";
 
     reviewGroups.forEach(function (group) {
       var box = document.createElement("div");
@@ -1468,7 +1285,6 @@
       edit.type = "button";
       edit.className = "chn-edit-btn";
       edit.textContent = "Edit";
-      edit.setAttribute("aria-label", "Edit " + group.title);
       edit.addEventListener("click", function () { hideErrorSummary(); showStep(group.step); });
       head.appendChild(h3); head.appendChild(edit);
       box.appendChild(head);
@@ -1480,19 +1296,17 @@
       group.rows.forEach(function (row) {
         var label = row[0], key = row[1];
         var value = readValue(key);
-        // merge self-describe / other into their parent line
         if (row[2] && value === row[2] && row[3]) {
           var extra = readValue(row[3]);
           value = extra ? (row[2] + " — " + extra) : row[2];
         }
-        // skip self-describe/other standalone keys (already merged) and empty optionals
         if (key === "pronouns_self_describe" || key === "preferred_language_other" ||
             key === "gender_identity_self_describe" || key === "relationship_status_self_describe") return;
         if (!value) return;
 
         anyShown = true;
         var dt = document.createElement("dt"); dt.textContent = label;
-        var dd = document.createElement("dd"); dd.textContent = value; // safe: user text as text
+        var dd = document.createElement("dd"); dd.textContent = value;
         var wrap = document.createElement("div"); wrap.className = "chn-review-row";
         wrap.appendChild(dt); wrap.appendChild(dd);
         dl.appendChild(wrap);
@@ -1509,9 +1323,6 @@
     });
   }
 
-  /* =========================================================================
-     Payload — explicit object; conditional keys excluded when N/A.
-     ========================================================================= */
   function buildPayload() {
     function v(key) { return readValue(key); }
 
@@ -1545,11 +1356,10 @@
       information_accuracy_confirmed: root.querySelector("#information_accuracy_confirmed").checked,
       form_name: "Community Healthcare Network New Patient Intake",
       submission_source: "chnnyc_client_website",
-      submission_status: "complete",   // sendPartial() overrides this to "partial"
+      submission_status: "complete",
       last_step_reached: TOTAL_STEPS
     };
 
-    // conditional keys — include only when their question applies
     if (p.legal_name_different === "Yes") p.legal_name = v("legal_name");
     if (p.pronouns === "Self-describe") p.pronouns_self_describe = v("pronouns_self_describe");
     if (p.preferred_language === "Other") p.preferred_language_other = v("preferred_language_other");
@@ -1562,56 +1372,98 @@
     return p;
   }
 
-  // A partial is only useful if we can key a lead on it (email or a phone).
+  /* Builds the FormSubmit body: owner gets full intake; patient gets autoresponse. */
+  function buildEmailBody(payload) {
+    var name = payload.preferred_name || "there";
+    function yn(v) {
+      if (v === true || v === "Yes") return "Yes";
+      if (v === false || v === "No") return "No";
+      return v || "";
+    }
+    return {
+      _subject: "New Patient Intake — " + (payload.preferred_name || payload.email || "Submission"),
+      _template: "table",
+      _captcha: "false",
+      _replyto: payload.email,
+      _autoresponse:
+        "Hi " + name + ",\n\n" +
+        "Thank you for submitting your new patient intake form to Community Healthcare Network. " +
+        "We have received your information and our care team will review it before your visit.\n\n" +
+        "If you have questions, call 866-246-8259.\n\n" +
+        "— Community Healthcare Network",
+      name: payload.preferred_name,
+      email: payload.email,
+      phone: payload.phone,
+      date_of_birth: payload.date_of_birth,
+      legal_name_different: payload.legal_name_different,
+      legal_name: payload.legal_name || "",
+      pronouns: payload.pronouns || "",
+      preferred_language: payload.preferred_language || "",
+      gender_identity: payload.gender_identity || "",
+      sex_assigned_at_birth: payload.sex_assigned_at_birth || "",
+      gender_affirming_care: yn(payload.gender_affirming_care),
+      relationship_status: payload.relationship_status || "",
+      emergency_contact_name: payload.emergency_contact_name,
+      emergency_contact_relationship: payload.emergency_contact_relationship,
+      emergency_contact_phone: payload.emergency_contact_phone,
+      emergency_contact_authorized: payload.emergency_contact_authorized,
+      address_line_1: payload.address_line_1,
+      address_line_2: payload.address_line_2 || "",
+      city: payload.city,
+      state: payload.state,
+      postal_code: payload.postal_code,
+      detailed_messages_permission: payload.detailed_messages_permission || "",
+      insurance_status: payload.insurance_status || "",
+      insurance_provider: payload.insurance_provider || "",
+      insurance_member_id: payload.insurance_member_id || "",
+      reason_for_visit: payload.reason_for_visit,
+      current_medications: payload.current_medications || "",
+      allergies: payload.allergies || "",
+      care_team_notes: payload.care_team_notes || "",
+      information_accuracy_confirmed: yn(payload.information_accuracy_confirmed),
+      form_name: payload.form_name
+    };
+  }
+
   function hasContactKey(p) {
     return !!((p.email && p.email.length) ||
               (p.phone && p.phone.length) ||
               (p.emergency_contact_phone && p.emergency_contact_phone.length));
   }
 
-  // Send whatever's entered so far. Safe to call often: it no-ops unless there's
-  // new, lead-worthy data, and it never blocks the UI or surfaces errors.
   function sendPartial(reason) {
     if (!CAPTURE_PARTIAL || completed || isSubmitting) return;
     var hp = root.querySelector("#chn_company_url");
-    if (hp && hp.value) return;                     // ignore bots (honeypot filled)
+    if (hp && hp.value) return;
     var p = buildPayload();
-    if (!hasContactKey(p)) return;                  // nothing to attach a lead to yet
+    if (!hasContactKey(p)) return;
     p.submission_status = "partial";
     p.last_step_reached = currentStep;
     p.partial_reason = reason;
     var body = JSON.stringify(p);
-    if (body === lastPartialSnapshot) return;        // no new info since last send
+    if (body === lastPartialSnapshot) return;
     lastPartialSnapshot = body;
     try {
       var blob = new Blob([body], { type: "application/json" });
-      var sent = false;
-      // sendBeacon survives tab-close / navigation; ideal for abandonment.
-      if (navigator.sendBeacon) sent = navigator.sendBeacon(GHL_INBOUND_WEBHOOK_URL, blob);
-      if (!sent) {
-        fetch(GHL_INBOUND_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: body,
-          keepalive: true
-        }).catch(function () {});
-      }
-    } catch (err) { /* capture must never interrupt the patient */ }
+      if (navigator.sendBeacon) navigator.sendBeacon(GHL_INBOUND_WEBHOOK_URL, blob);
+      else fetch(GHL_INBOUND_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: body,
+        keepalive: true
+      }).catch(function () {});
+    } catch (err) {}
   }
 
-  // Fire a partial when the patient advances a step, and if they leave early.
   function capturePartialOnAdvance() { sendPartial("step_" + currentStep); }
   document.addEventListener("visibilitychange", function () {
     if (document.visibilityState === "hidden") sendPartial("abandoned");
   });
   window.addEventListener("pagehide", function () { sendPartial("abandoned"); });
 
-  /* =========================================================================
-     Submission
-     ========================================================================= */
-  var submitLabel = root.querySelector("#chn-submit-label");
   var donePanel = root.querySelector("#chn-done");
   var shell = root.querySelector("#chn-shell");
+  var stepsWrap = root.querySelector("#chn-steps-wrap");
 
   function setSubmitting(on) {
     isSubmitting = on;
@@ -1620,101 +1472,96 @@
     if (on) {
       submitBtn.innerHTML = '<span class="chn-spinner" aria-hidden="true"></span><span>Submitting securely…</span>';
     } else {
-      submitBtn.textContent = "";
-      var s = document.createElement("span"); s.id = "chn-submit-label"; s.textContent = "Submit securely";
-      submitBtn.appendChild(s);
+      submitBtn.innerHTML = '<span id="chn-submit-label">Submit securely</span>';
     }
   }
 
   function showFailure() {
     setSubmitting(false);
-    var problems = [{
-      field: submitBtn, errEl: null,
-      label: "Submission", message: "We couldn’t securely submit your information. Please check your connection and try again."
-    }];
-    errorSummaryTitle.textContent = "We couldn’t submit your information";
+    errorSummaryTitle.textContent = "We couldn't submit your information";
     errorSummaryList.textContent = "";
     var li = document.createElement("li");
-    li.textContent = "We couldn’t securely submit your information. Please check your connection and try again.";
+    li.textContent = "Please check your connection and try again.";
     errorSummaryList.appendChild(li);
-    var tryLi = document.createElement("li");
-    var tryBtn = document.createElement("button");
-    tryBtn.type = "button"; tryBtn.textContent = "Try again";
-    tryBtn.addEventListener("click", function () { hideErrorSummary(); submitBtn.focus(); });
-    tryLi.appendChild(tryBtn);
-    errorSummaryList.appendChild(tryLi);
     errorSummary.classList.add("chn-show");
     errorSummary.focus();
   }
 
   function showSuccess() {
-    completed = true;   // stop any partial-capture from firing after completion
-    // Replace the form with the confirmation panel; clear values from the DOM.
+    completed = true;
     form.hidden = true;
-    root.querySelector(".chn-aside") && (root.querySelector(".chn-journey").setAttribute("aria-hidden","true"));
+    stepsWrap.hidden = true;
     shell.classList.add("chn-is-complete");
-    // hide the branded aside + mobile head progress on success but keep branding via logo in panel
-    var aside = root.querySelector(".chn-aside"); if (aside) aside.style.display = "none";
-    var mhead = root.querySelector(".chn-mhead"); if (mhead) mhead.style.display = "none";
     donePanel.hidden = false;
-    try { form.reset(); } catch (e) {}
-    var h = root.querySelector("#chn-done-h"); if (h) h.focus();
+
+    var emailNote = root.querySelector("#chn-done-email-note");
+    var emailSpan = root.querySelector("#chn-done-email");
+    if (submittedEmail && emailNote && emailSpan) {
+      emailSpan.textContent = submittedEmail;
+      emailNote.hidden = false;
+    }
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    var h = root.querySelector("#chn-done-h");
+    if (h) h.focus();
   }
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     if (isSubmitting) return;
-    if (currentStep !== TOTAL_STEPS) { if (validateStep(currentStep)) { showStep(currentStep + 1); capturePartialOnAdvance(); } return; }
+    if (currentStep !== TOTAL_STEPS) {
+      if (validateStep(currentStep)) { showStep(currentStep + 1); capturePartialOnAdvance(); }
+      return;
+    }
 
-    // Validate first — a valid submission must never be silently dropped.
     if (!validateStep(TOTAL_STEPS)) return;
 
-    // Spam controls (silent): honeypot filled OR implausibly fast completion.
-    // A real patient crossing four steps cannot beat MIN_COMPLETION_MS, so this
-    // only ever trips bots. We show the normal confirmation and send nothing —
-    // bots get no signal and no data leaves the browser.
     var hp = root.querySelector("#chn_company_url");
     var tooFast = (Date.now() - loadedAt) < MIN_COMPLETION_MS;
     if ((hp && hp.value) || tooFast) { showSuccess(); return; }
 
-    // ---- send ----
     setSubmitting(true);
     hideErrorSummary();
 
     var payload = buildPayload();
+    submittedEmail = payload.email || "";
+    var emailBody = buildEmailBody(payload);
+    var ghlBody = JSON.stringify(payload);
+
     var controller = new AbortController();
     var timer = setTimeout(function () { controller.abort(); }, SUBMIT_TIMEOUT_MS);
 
-    fetch(GHL_INBOUND_WEBHOOK_URL, {
+    var ghlPromise = fetch(GHL_INBOUND_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: ghlBody,
       signal: controller.signal
-      // NOTE: patient data travels here and nowhere else. Nothing is logged.
-    })
-    .then(function (res) {
+    }).then(function (res) { return res.ok; }).catch(function () { return false; });
+
+    var emailPromise = fetch(EMAIL_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify(emailBody),
+      signal: controller.signal
+    }).then(function (res) { return res.ok; }).catch(function () { return false; });
+
+    Promise.all([ghlPromise, emailPromise]).then(function (results) {
       clearTimeout(timer);
-      if (res.ok) { showSuccess(); }      // any 2xx = success
-      else { showFailure(); }
-    })
-    .catch(function () {
-      clearTimeout(timer);
-      showFailure();                       // network error / timeout / abort
+      var ghlOk = results[0];
+      var emailOk = results[1];
+      // Both are attempted. Thank-you if GHL succeeded (CRM is primary);
+      // email is best-effort so a FormSubmit hiccup doesn't block the patient.
+      if (ghlOk) showSuccess();
+      else if (emailOk) showSuccess(); // fallback: emails went out even if GHL failed
+      else showFailure();
     });
   });
 
-  /* ---- init ---- */
   evaluateConditionals();
   showStep(1, false);
-
-  /* -------------------------------------------------------------------------
-     OPTIONAL: Cloudflare Turnstile can be added here for stronger bot defense.
-     1) Load https://challenges.cloudflare.com/turnstile/v0/api.js (async, defer)
-     2) Add <div class="cf-turnstile" data-sitekey="YOUR_SITE_KEY"></div> near submit
-     3) Before fetch(), read the token: turnstile.getResponse() and include it as
-        payload.cf_turnstile_token, then verify server-side in your GHL workflow
-        or an intermediate function. Turnstile is privacy-friendly (no cookies).
-     ------------------------------------------------------------------------- */
 })();
 </script>
 </body>
