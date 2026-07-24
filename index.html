@@ -939,11 +939,12 @@ body {
           </svg>
         </div>
         <h2 tabindex="-1" id="chn-done-h">Thank you!</h2>
-        <p>Your intake information has been submitted securely to the Community Healthcare Network care team.</p>
+        <p>We've received your intake form and it's securely on file. There's nothing more you need to do right now.</p>
+        <p>A member of our care team will review it and reach out within a few business days about next steps.</p>
         <p class="chn-done-email-note" id="chn-done-email-note" hidden>
           A confirmation email has been sent to <strong id="chn-done-email"></strong>.
         </p>
-        <p class="chn-done-support">Need assistance? Call <a href="tel:+18662468259">866-246-8259</a>.</p>
+        <p class="chn-done-support">Questions? Call <a href="tel:+18662468259">866-246-8259</a> or email <a href="mailto:info@chnnyc.org">info@chnnyc.org</a>.</p>
       </div>
 
     </div>
@@ -1381,15 +1382,20 @@ body {
       return v || "";
     }
     return {
+      /* Owner notification */
       _subject: "New Patient Intake — " + (payload.preferred_name || payload.email || "Submission"),
       _template: "table",
       _captcha: "false",
       _replyto: payload.email,
+      /* Patient confirmation — client-approved copy */
       _autoresponse:
+        "Your intake form has been received.\n\n" +
+        "We've got your form. Here's what happens next.\n\n" +
         "Hi " + name + ",\n\n" +
-        "Thank you for submitting your new patient intake form to Community Healthcare Network. " +
-        "We have received your information and our care team will review it before your visit.\n\n" +
-        "If you have questions, call 866-246-8259.\n\n" +
+        "We've received your intake form and it's securely on file. There's nothing more you need to do right now.\n\n" +
+        "A member of our care team will review it and reach out within a few business days about next steps.\n\n" +
+        "Questions in the meantime? Contact us at 866-246-8259 or info@chnnyc.org, " +
+        "Monday–Thursday 8am–7pm, Friday 8am–5pm, Saturday 8am–4pm.\n\n" +
         "— Community Healthcare Network",
       name: payload.preferred_name,
       email: payload.email,
