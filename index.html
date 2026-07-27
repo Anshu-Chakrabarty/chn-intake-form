@@ -5,19 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex" />
 <title>New Patient Intake — Community Healthcare Network</title>
+
+<link rel="icon" type="image/png" href="favicon.png" />
+<link rel="icon" href="favicon.ico" sizes="any" />
+<link rel="apple-touch-icon" href="favicon.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
 <style>
 *, *::before, *::after { box-sizing: border-box; }
 
-html {
-  -webkit-text-size-adjust: 100%;
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body { margin: 0; min-height: 100vh; overflow-x: hidden; }
 
 .chn-intake-form,
 .chn-intake-form *,
@@ -25,448 +26,410 @@ body {
 .chn-intake-form *::after { box-sizing: border-box; }
 
 .chn-intake-form {
-  --chn-primary:        #007a82;
-  --chn-primary-strong: #005a60;
-  --chn-primary-tint:   #e2f1f1;
-  --chn-secondary:      #123138;
-  --chn-accent:         #e4633b;
-  --chn-accent-soft:    #fdece5;
-  --chn-background:     #eef6f6;
-  --chn-surface:        #ffffff;
-  --chn-panel-1:        #00757d;
-  --chn-panel-2:        #0a4a52;
-  --chn-text:           #1c2b30;
-  --chn-muted-text:     #566b70;
-  --chn-on-panel:       #f2fbfb;
-  --chn-on-panel-muted: #bfe0e1;
-  --chn-border:         #d5e3e3;
-  --chn-field-border:   #b4c8ca;
-  --chn-success:        #1e7a52;
-  --chn-success-soft:   #e7f4ec;
-  --chn-error:          #c13525;
-  --chn-error-soft:     #fcebe8;
-  --chn-radius:         16px;
-  --chn-radius-sm:      10px;
-  --chn-form-width:     920px;
-  --chn-shadow:         0 1px 2px rgba(18,49,56,.06), 0 18px 40px -22px rgba(18,49,56,.35);
-  --chn-shadow-sm:      0 1px 2px rgba(18,49,56,.08);
-  --chn-ring:           0 0 0 3px rgba(0,122,130,.35);
-  --chn-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                   "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  /* Brand palette (from CHN brand sheet + measured from the mockups) */
+  --cyan:         #00BAD3;
+  --cyan-deep:    #0E8C9C;
+  --yellow:       #FFCE34;
+  --yellow-dark:  #f0bd1a;
+  --teal:         #1E4B48;
+  --teal-strong:  #143634;
+  --ink:          #00161A;
+  --cream:        #FBF6EA;
+  --cream-line:   #ece4d2;
+  --surface:      #ffffff;
+  --muted:        #565656;
+  --hint:         #6f7274;
+  --field-border: #cdd0cd;
+  --line-soft:    #e7e6df;
+  --asterisk:     #D05823;
+  --note-cyan:    #E7FBFA;
+  --error:        #c13525;
+  --error-soft:   #fcebe8;
+  --radius:       10px;
+  --radius-sm:    7px;
+  --max:          1120px;
+  --ring:         0 0 0 3px rgba(30,75,72,.25);
 
-  font-family: var(--chn-font-body);
-  color: var(--chn-text);
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+
+  font-family: var(--font-body);
+  color: var(--ink);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
-  background: var(--chn-background);
-  background-image:
-    radial-gradient(120% 90% at 100% 0%, rgba(0,122,130,.10), transparent 60%),
-    radial-gradient(90% 70% at 0% 100%, rgba(228,99,59,.06), transparent 55%);
+  background: var(--cream);
   min-height: 100vh;
-  padding: 0 0 clamp(20px, 4vw, 40px);
 }
 
-/* ---- Top header ----------------------------------------------------------- */
-.chn-intake-form .chn-top-header {
-  background: linear-gradient(160deg, var(--chn-panel-1), var(--chn-panel-2));
-  color: var(--chn-on-panel);
-  padding: clamp(18px, 4vw, 28px) clamp(16px, 4vw, 32px);
-  position: relative;
-  overflow: hidden;
-}
-.chn-intake-form .chn-top-header::after {
-  content: "";
-  position: absolute; inset: 0;
-  background: radial-gradient(140% 60% at 100% 0%, rgba(228,99,59,.22), transparent 55%);
-  pointer-events: none;
-}
-.chn-intake-form .chn-top-inner {
-  position: relative; z-index: 1;
-  max-width: var(--chn-form-width);
-  margin: 0 auto;
+/* ============================ HEADER ============================ */
+.chn-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+  align-items: stretch;
+  background: var(--surface);
 }
-.chn-intake-form .chn-top-brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.chn-intake-form .chn-logo-wrap {
-  background: #fff;
-  border-radius: var(--chn-radius-sm);
-  padding: 10px 12px;
-  flex-shrink: 0;
-  box-shadow: var(--chn-shadow-sm);
-}
-.chn-intake-form .chn-logo { display: block; max-width: 160px; width: 100%; height: auto; }
-.chn-intake-form .chn-logo-fallback {
-  font-weight: 800; color: var(--chn-secondary); font-size: 14px; line-height: 1.2;
-}
-.chn-intake-form .chn-logo-fallback span { display: block; color: var(--chn-primary); font-size: 19px; }
-.chn-intake-form .chn-top-text { min-width: 0; }
-.chn-intake-form .chn-top-eyebrow {
-  text-transform: uppercase; letter-spacing: .12em; font-size: 11px;
-  font-weight: 700; color: var(--chn-on-panel-muted); margin: 0 0 4px;
-}
-.chn-intake-form .chn-top-title {
-  font-size: clamp(17px, 3.5vw, 22px); font-weight: 700; color: #fff;
-  margin: 0; line-height: 1.25;
-}
-.chn-intake-form .chn-top-phone {
-  color: #fff; font-weight: 700; text-decoration: none; font-size: 15px;
-  white-space: nowrap; flex-shrink: 0;
-}
-.chn-intake-form .chn-top-phone small {
-  display: block; font-weight: 500; color: var(--chn-on-panel-muted);
-  font-size: 11px; margin-bottom: 2px;
-}
-.chn-intake-form .chn-top-phone:hover { text-decoration: underline; }
-
-/* ---- Horizontal step indicator ------------------------------------------ */
-.chn-intake-form .chn-steps-wrap {
-  background: var(--chn-surface);
-  border-bottom: 1px solid var(--chn-border);
-  box-shadow: var(--chn-shadow-sm);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-.chn-intake-form .chn-steps-inner {
-  max-width: var(--chn-form-width);
-  margin: 0 auto;
-  padding: 14px clamp(12px, 3vw, 24px) 16px;
-}
-.chn-intake-form .chn-step-meta {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  margin-bottom: 10px; flex-wrap: wrap;
-}
-.chn-intake-form .chn-step-count {
-  font-size: 12px; font-weight: 700; letter-spacing: .04em;
-  color: var(--chn-primary); text-transform: uppercase;
-}
-.chn-intake-form .chn-support-inline { font-size: 12px; color: var(--chn-muted-text); }
-.chn-intake-form .chn-support-inline a { color: var(--chn-primary-strong); font-weight: 600; text-decoration: none; }
-.chn-intake-form .chn-support-inline a:hover { text-decoration: underline; }
-
-.chn-intake-form .chn-hsteps {
-  list-style: none; margin: 0; padding: 0;
+.chn-logo-box {
+  flex: 0 0 auto;
+  width: clamp(150px, 18vw, 220px);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  place-items: center;
+  padding: 12px 20px;
+  border-right: 1px solid var(--line-soft);
 }
-.chn-intake-form .chn-hsteps li {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 6px; text-align: center; min-width: 0;
-}
-.chn-intake-form .chn-hnode {
-  width: 32px; height: 32px; border-radius: 50%;
-  display: grid; place-items: center; font-weight: 700; font-size: 13px;
-  background: var(--chn-primary-tint); color: var(--chn-muted-text);
-  border: 2px solid var(--chn-border); transition: all .2s ease; flex-shrink: 0;
-}
-.chn-intake-form .chn-hlabel {
-  font-size: clamp(10px, 2.5vw, 12px); font-weight: 600;
-  color: var(--chn-muted-text); line-height: 1.2;
-  word-break: break-word; hyphens: auto;
-}
-.chn-intake-form .chn-hsteps li[data-state="current"] .chn-hnode {
-  background: var(--chn-primary); border-color: var(--chn-primary);
-  color: #fff; transform: scale(1.08);
-  box-shadow: 0 0 0 3px rgba(0,122,130,.2);
-}
-.chn-intake-form .chn-hsteps li[data-state="current"] .chn-hlabel { color: var(--chn-primary-strong); }
-.chn-intake-form .chn-hsteps li[data-state="done"] .chn-hnode {
-  background: var(--chn-success-soft); border-color: var(--chn-success); color: var(--chn-success);
-}
-.chn-intake-form .chn-hsteps li[data-state="done"] .chn-hlabel { color: var(--chn-text); }
+.chn-logo { display: block; width: 100%; max-width: 168px; height: auto; }
+.chn-logo-fallback { font-weight: 800; color: var(--ink); font-size: 15px; line-height: 1.15; text-align: center; }
+.chn-logo-fallback span { display: block; color: var(--cyan); }
 
-.chn-intake-form .chn-progress {
-  height: 6px; border-radius: 999px; background: var(--chn-primary-tint);
-  overflow: hidden; margin-top: 12px;
-}
-.chn-intake-form .chn-progress-fill {
-  height: 100%; width: 25%; border-radius: 999px;
-  background: linear-gradient(90deg, var(--chn-primary), #17a2ac);
-  transition: width .38s cubic-bezier(.4,0,.2,1);
-}
+.chn-header-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
 
-/* ---- Shell / form card ---------------------------------------------------- */
-.chn-intake-form .chn-shell {
-  width: 100%;
-  max-width: var(--chn-form-width);
-  margin: clamp(16px, 3vw, 28px) auto 0;
-  background: var(--chn-surface);
-  border: 1px solid var(--chn-border);
-  border-radius: var(--chn-radius);
-  box-shadow: var(--chn-shadow);
-  overflow: hidden;
+.chn-utility { background: var(--cyan); color: #fff; }
+.chn-utility-inner {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 11px clamp(18px, 3vw, 40px);
+  font-size: 13px; font-weight: 500;
 }
-.chn-intake-form .chn-shell.chn-is-complete {
-  max-width: 640px;
-  margin-top: clamp(24px, 5vw, 48px);
+.chn-utility a { color: #fff; text-decoration: none; }
+.chn-util-call { font-weight: 600; }
+.chn-util-links { display: flex; align-items: center; gap: 14px; }
+.chn-util-div { opacity: .55; }
+.chn-utility a:hover { text-decoration: underline; }
+
+.chn-masthead-inner {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  padding: 15px clamp(18px, 3vw, 40px) 17px;
+}
+.chn-eyebrow-top {
+  margin: 0 0 3px; font-size: 11px; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--cyan-deep);
+}
+.chn-mast-title {
+  margin: 0; font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(18px, 2.4vw, 25px); line-height: 1.2; color: var(--ink);
+  letter-spacing: -.005em;
+}
+.chn-mast-help { text-align: right; text-decoration: none; flex-shrink: 0; }
+.chn-mast-help span {
+  display: block; font-size: 10.5px; font-weight: 700; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--hint); margin-bottom: 1px;
+}
+.chn-mast-help strong {
+  font-family: var(--font-display); font-weight: 600; color: var(--ink);
+  font-size: clamp(17px, 2vw, 21px);
 }
 
-.chn-intake-form .chn-main { padding: clamp(20px, 4vw, 36px); min-width: 0; }
+.chn-rule { height: 6px; background: var(--teal); }
 
-.chn-intake-form .chn-eyebrow {
-  text-transform: uppercase; letter-spacing: .13em; font-size: 11px; font-weight: 700;
-  color: var(--chn-accent); margin: 0 0 6px;
+/* ============================ STEP TRACKER ============================ */
+.chn-steps-wrap { background: var(--cream); }
+.chn-steps-inner {
+  max-width: var(--max); margin: 0 auto;
+  padding: clamp(18px, 3vw, 26px) clamp(16px, 4vw, 40px) 0;
 }
-.chn-intake-form .chn-h1 {
-  font-size: clamp(22px, 5vw, 28px); line-height: 1.2; letter-spacing: -.015em;
-  font-weight: 750; color: var(--chn-secondary); margin: 0 0 10px;
+.chn-step-meta {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; margin-bottom: 18px;
 }
-.chn-intake-form .chn-intro {
-  font-size: clamp(14px, 3.5vw, 15.5px); color: var(--chn-muted-text);
-  margin: 0 0 4px; max-width: 62ch;
+.chn-step-count {
+  font-size: 12px; font-weight: 700; letter-spacing: .11em;
+  text-transform: uppercase; color: var(--cyan-deep);
 }
-.chn-intake-form .chn-intro .chn-req-key { color: var(--chn-text); font-weight: 600; }
+.chn-support-inline { font-size: 13px; color: var(--muted); }
+.chn-support-inline a { color: var(--ink); font-weight: 700; text-decoration: none; }
+.chn-support-inline a:hover { text-decoration: underline; }
 
-.chn-intake-form .chn-step { display: none; }
-.chn-intake-form .chn-step.chn-active { display: block; animation: chn-fade .32s ease both; }
+.chn-hsteps {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+}
+.chn-hsteps li {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  text-align: center; min-width: 0;
+}
+.chn-hnode {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700; font-size: 15px;
+  background: var(--surface); color: #93a0a0;
+  border: 2px solid var(--field-border); transition: all .2s ease; flex-shrink: 0;
+}
+.chn-hlabel {
+  font-size: clamp(11px, 2.4vw, 14px); font-weight: 600;
+  color: #93a0a0; line-height: 1.25; word-break: break-word;
+}
+.chn-hsteps li[data-state="current"] .chn-hnode {
+  background: var(--teal); border-color: var(--teal); color: #fff;
+}
+.chn-hsteps li[data-state="current"] .chn-hlabel { color: var(--ink); font-weight: 700; }
+.chn-hsteps li[data-state="done"] .chn-hnode {
+  background: var(--cyan); border-color: var(--cyan); color: #fff; font-size: 0;
+}
+.chn-hsteps li[data-state="done"] .chn-hnode::after {
+  content: ""; width: 15px; height: 9px; margin-top: -3px;
+  border-left: 2.6px solid #fff; border-bottom: 2.6px solid #fff;
+  transform: rotate(-45deg);
+}
+.chn-hsteps li[data-state="done"] .chn-hlabel { color: var(--ink); }
+
+.chn-steptrack {
+  margin-top: 16px; height: 3px; background: var(--cream-line);
+  position: relative; border-radius: 2px;
+}
+.chn-steptrack-fill {
+  position: absolute; left: 0; top: 0; height: 100%; width: 25%;
+  background: var(--teal); border-radius: 2px;
+  transition: width .4s cubic-bezier(.4,0,.2,1);
+}
+
+/* ============================ CARD / SHELL ============================ */
+.chn-shell {
+  width: 100%; max-width: var(--max);
+  margin: clamp(18px, 3vw, 30px) auto clamp(28px, 5vw, 52px);
+  background: var(--surface);
+  border-top: 2px solid var(--teal);
+  box-shadow: 0 1px 2px rgba(0,22,26,.05), 0 30px 60px -40px rgba(0,22,26,.35);
+}
+.chn-shell.chn-is-complete { max-width: 720px; }
+.chn-main { padding: clamp(26px, 4.5vw, 56px); min-width: 0; }
+
+/* ============================ STEP HEADINGS ============================ */
+.chn-step { display: none; }
+.chn-step.chn-active { display: block; animation: chn-fade .32s ease both; }
 @keyframes chn-fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-.chn-intake-form .chn-step-head { margin-bottom: 18px; }
-.chn-intake-form .chn-fieldset {
-  border: 1px solid var(--chn-border); border-radius: var(--chn-radius);
-  padding: clamp(14px, 3vw, 20px) clamp(14px, 3vw, 20px) 6px;
-  margin: 0 0 18px; background: #fbfdfd;
+.chn-step-head { margin: 0 0 26px; padding-bottom: 26px; border-bottom: 1px solid var(--line-soft); }
+.chn-h1 {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(28px, 4.5vw, 40px); line-height: 1.12; letter-spacing: -.01em;
+  color: var(--teal); margin: 0 0 12px;
 }
-.chn-intake-form .chn-fieldset > legend {
-  font-weight: 700; font-size: 15px; color: var(--chn-secondary);
-  padding: 0 8px; margin-left: -8px;
-}
-.chn-intake-form .chn-section-help {
-  font-size: 13.5px; color: var(--chn-muted-text); margin: 2px 0 14px; max-width: 62ch;
-}
+.chn-intro { font-size: 15.5px; color: var(--muted); margin: 0; max-width: 66ch; }
+.chn-intro .chn-req-key { color: var(--ink); font-weight: 600; }
 
-.chn-intake-form .chn-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px 16px;
+/* ============================ FIELDSETS / SECTIONS ============================ */
+.chn-fieldset { border: 0; margin: 0; padding: 0; }
+.chn-fieldset + .chn-fieldset { margin-top: 30px; padding-top: 30px; border-top: 1px solid var(--line-soft); }
+.chn-fieldset > legend {
+  display: block; width: 100%; padding: 0; margin: 0 0 6px;
+  font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--cyan-deep);
 }
-.chn-intake-form .chn-field { margin-bottom: 14px; min-width: 0; }
-.chn-intake-form .chn-field.chn-col-2 { grid-column: 1 / -1; }
+.chn-section-help { font-size: 14px; color: var(--muted); margin: 0 0 20px; max-width: 66ch; }
 
-.chn-intake-form .chn-label {
-  display: block; font-weight: 600; font-size: 14px; color: var(--chn-text); margin-bottom: 6px;
-}
-.chn-intake-form .chn-opt { color: var(--chn-muted-text); font-weight: 500; }
-.chn-intake-form .chn-req { color: var(--chn-accent); font-weight: 700; margin-left: 2px; }
-.chn-intake-form .chn-hint { display: block; font-size: 13px; color: var(--chn-muted-text); margin: -2px 0 8px; }
+.chn-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 20px; }
+.chn-field { margin-bottom: 20px; min-width: 0; }
+.chn-field.chn-col-2 { grid-column: 1 / -1; }
 
-.chn-intake-form .chn-input,
-.chn-intake-form .chn-select,
-.chn-intake-form .chn-textarea {
-  width: 100%; font: inherit; color: var(--chn-text); background: var(--chn-surface);
-  border: 1.5px solid var(--chn-field-border); border-radius: var(--chn-radius-sm);
-  padding: 12px 14px; transition: border-color .15s ease, box-shadow .15s ease;
+.chn-label { display: block; font-weight: 600; font-size: 15px; color: var(--ink); margin-bottom: 8px; }
+.chn-opt { color: var(--muted); font-weight: 400; font-size: 13px; }
+.chn-req { color: var(--asterisk); font-weight: 700; margin-left: 2px; }
+.chn-hint { display: block; font-size: 13px; color: var(--hint); margin: -2px 0 8px; }
+
+.chn-input, .chn-select, .chn-textarea {
+  width: 100%; font: inherit; font-size: 15px; color: var(--ink); background: var(--surface);
+  border: 1.5px solid var(--field-border); border-radius: var(--radius-sm);
+  padding: 13px 15px; transition: border-color .15s ease, box-shadow .15s ease;
   appearance: none; -webkit-appearance: none; max-width: 100%;
 }
-.chn-intake-form .chn-textarea { min-height: 108px; resize: vertical; line-height: 1.5; }
-.chn-intake-form .chn-select {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%23566b70' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='5 8 10 13 15 8'/></svg>");
-  background-repeat: no-repeat; background-position: right 12px center; padding-right: 40px; cursor: pointer;
+.chn-textarea { min-height: 132px; resize: vertical; line-height: 1.5; }
+.chn-select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%231E4B48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='5 8 10 13 15 8'/></svg>");
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 42px; cursor: pointer;
 }
-.chn-intake-form .chn-input::placeholder,
-.chn-intake-form .chn-textarea::placeholder { color: #93a6a9; }
-.chn-intake-form .chn-input:hover,
-.chn-intake-form .chn-select:hover,
-.chn-intake-form .chn-textarea:hover { border-color: var(--chn-primary); }
-.chn-intake-form .chn-input:focus-visible,
-.chn-intake-form .chn-select:focus-visible,
-.chn-intake-form .chn-textarea:focus-visible {
-  outline: none; border-color: var(--chn-primary); box-shadow: var(--chn-ring);
+.chn-input::placeholder, .chn-textarea::placeholder { color: #9aa0a0; }
+.chn-input:hover, .chn-select:hover, .chn-textarea:hover { border-color: #9aa8a4; }
+.chn-input:focus-visible, .chn-select:focus-visible, .chn-textarea:focus-visible {
+  outline: none; border-color: var(--teal); box-shadow: var(--ring);
 }
-.chn-intake-form [aria-invalid="true"] { border-color: var(--chn-error) !important; }
+[aria-invalid="true"] { border-color: var(--error) !important; }
 
-.chn-intake-form .chn-field-error {
+.chn-field-error {
   display: none; align-items: center; gap: 6px;
-  color: var(--chn-error); font-size: 13px; font-weight: 600; margin-top: 7px;
+  color: var(--error); font-size: 13px; font-weight: 600; margin: 8px 0 0;
 }
-.chn-intake-form .chn-field-error.chn-show { display: flex; }
-.chn-intake-form .chn-field-error::before {
+.chn-field-error.chn-show { display: flex; }
+.chn-field-error::before {
   content: "!"; display: inline-grid; place-items: center;
-  width: 16px; height: 16px; border-radius: 50%; background: var(--chn-error);
+  width: 16px; height: 16px; border-radius: 50%; background: var(--error);
   color: #fff; font-size: 11px; flex: none;
 }
 
-.chn-intake-form .chn-segment { display: inline-flex; gap: 8px; flex-wrap: wrap; width: 100%; }
-.chn-intake-form .chn-segment .chn-seg-opt { position: relative; flex: 1 1 96px; }
-.chn-intake-form .chn-segment input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.chn-intake-form .chn-segment label {
-  display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
-  border: 1.5px solid var(--chn-field-border); border-radius: var(--chn-radius-sm);
-  padding: 11px 16px; font-weight: 600; font-size: 15px; color: var(--chn-text);
-  background: var(--chn-surface); transition: all .15s ease; width: 100%;
+/* Segmented Yes / No (pills) */
+.chn-segment { display: flex; gap: 14px; width: 100%; }
+.chn-segment .chn-seg-opt { position: relative; flex: 1 1 0; min-width: 0; }
+.chn-segment input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chn-segment label {
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  border: 1.5px solid var(--field-border); border-radius: 999px;
+  padding: 13px 20px; font-weight: 600; font-size: 15px; color: var(--ink);
+  background: var(--surface); transition: all .15s ease; width: 100%;
 }
-.chn-intake-form .chn-segment label:hover { border-color: var(--chn-primary); }
-.chn-intake-form .chn-segment input:checked + label {
-  border-color: var(--chn-primary); background: var(--chn-primary-tint);
-  color: var(--chn-primary-strong); box-shadow: inset 0 0 0 1px var(--chn-primary);
+.chn-segment label:hover { border-color: #9aa8a4; }
+.chn-segment input:checked + label {
+  border-color: var(--teal); background: var(--teal); color: #fff;
 }
+.chn-segment input:focus-visible + label { box-shadow: var(--ring); }
 
-.chn-intake-form .chn-cards { display: grid; gap: 10px; }
-.chn-intake-form .chn-card { position: relative; }
-.chn-intake-form .chn-card input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.chn-intake-form .chn-card label {
-  display: flex; align-items: flex-start; gap: 12px; cursor: pointer;
-  border: 1.5px solid var(--chn-field-border); border-radius: var(--chn-radius-sm);
-  padding: 14px 16px; background: var(--chn-surface); transition: all .15s ease;
-  font-size: 15px; color: var(--chn-text); line-height: 1.4;
+/* Radio cards */
+.chn-cards { display: grid; gap: 12px; }
+.chn-card { position: relative; }
+.chn-card input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chn-card label {
+  display: flex; align-items: center; gap: 14px; cursor: pointer;
+  border: 1.5px solid var(--field-border); border-radius: var(--radius);
+  padding: 16px 18px; background: var(--surface); transition: all .15s ease;
+  font-size: 15px; color: var(--ink); line-height: 1.4;
 }
-.chn-intake-form .chn-card label::before {
-  content: ""; flex: none; width: 20px; height: 20px; border-radius: 50%; margin-top: 1px;
-  border: 2px solid var(--chn-field-border);
+.chn-card label::before {
+  content: ""; flex: none; width: 21px; height: 21px; border-radius: 50%;
+  border: 2px solid var(--field-border); transition: all .15s ease;
 }
-.chn-intake-form .chn-card input:checked + label {
-  border-color: var(--chn-primary); background: var(--chn-primary-tint);
+.chn-card label:hover { border-color: #9aa8a4; }
+.chn-card input:checked + label { border-color: var(--teal); background: #f2f6f5; }
+.chn-card input:checked + label::before {
+  border-color: var(--teal); background: var(--teal); box-shadow: inset 0 0 0 4px #fff;
 }
-.chn-intake-form .chn-card input:checked + label::before {
-  border-color: var(--chn-primary); background: var(--chn-primary); box-shadow: inset 0 0 0 4px #fff;
-}
+.chn-card input:focus-visible + label { box-shadow: var(--ring); }
 
-.chn-intake-form .chn-check {
-  display: flex; align-items: flex-start; gap: 12px; cursor: pointer;
-  border: 1.5px solid var(--chn-field-border); border-radius: var(--chn-radius-sm);
-  padding: 14px 16px; background: var(--chn-surface); font-size: 14.5px; line-height: 1.45;
-}
-.chn-intake-form .chn-check input {
-  flex: none; width: 20px; height: 20px; margin-top: 1px;
-  accent-color: var(--chn-primary); cursor: pointer;
-}
-.chn-intake-form .chn-check:has(input:checked) { background: var(--chn-primary-tint); border-color: var(--chn-primary); }
+/* Plain checkbox row */
+.chn-check { display: flex; align-items: flex-start; gap: 13px; cursor: pointer; font-size: 15px; line-height: 1.45; color: var(--ink); }
+.chn-check input { flex: none; width: 21px; height: 21px; margin: 1px 0 0; accent-color: var(--teal); cursor: pointer; }
 
-.chn-intake-form .chn-conditional { display: none; }
-.chn-intake-form .chn-conditional.chn-reveal { display: block; animation: chn-reveal .28s ease both; }
+.chn-conditional { display: none; }
+.chn-conditional.chn-reveal { display: block; animation: chn-reveal .28s ease both; }
 @keyframes chn-reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
-.chn-intake-form .chn-error-summary {
-  display: none; border: 1.5px solid var(--chn-error); background: var(--chn-error-soft);
-  border-radius: var(--chn-radius-sm); padding: 16px 18px; margin-bottom: 20px;
+/* Error summary */
+.chn-error-summary {
+  display: none; border: 1.5px solid var(--error); background: var(--error-soft);
+  border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 22px;
 }
-.chn-intake-form .chn-error-summary.chn-show { display: block; }
-.chn-intake-form .chn-error-summary h2 { margin: 0 0 8px; font-size: 15px; color: var(--chn-error); font-weight: 700; }
-.chn-intake-form .chn-error-summary ul { margin: 0; padding-left: 18px; }
-.chn-intake-form .chn-error-summary button {
-  background: none; border: none; color: var(--chn-error); font: inherit;
+.chn-error-summary.chn-show { display: block; }
+.chn-error-summary h2 { margin: 0 0 8px; font-size: 15px; color: var(--error); font-weight: 700; }
+.chn-error-summary ul { margin: 0; padding-left: 18px; }
+.chn-error-summary button {
+  background: none; border: none; color: var(--error); font: inherit;
   font-weight: 600; text-decoration: underline; cursor: pointer; padding: 0;
 }
 
-.chn-intake-form .chn-review-group {
-  border: 1px solid var(--chn-border); border-radius: var(--chn-radius);
-  overflow: hidden; margin-bottom: 14px;
+/* ============================ REVIEW ============================ */
+.chn-review-group {
+  border: 1px solid var(--line-soft); border-radius: var(--radius);
+  overflow: hidden; margin-bottom: 22px;
 }
-.chn-intake-form .chn-review-head {
+.chn-review-head {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  background: #f4fafa; padding: 12px 16px; border-bottom: 1px solid var(--chn-border);
+  background: var(--cream); padding: 15px 20px; border-bottom: 1px solid var(--line-soft);
   flex-wrap: wrap;
 }
-.chn-intake-form .chn-review-head h3 { margin: 0; font-size: 15px; color: var(--chn-secondary); font-weight: 700; }
-.chn-intake-form .chn-edit-btn {
-  background: #fff; border: 1.5px solid var(--chn-field-border); border-radius: 8px;
-  color: var(--chn-primary-strong); font: inherit; font-weight: 600; font-size: 13px;
-  padding: 6px 14px; cursor: pointer;
+.chn-review-head h3 { margin: 0; font-family: var(--font-display); font-size: 20px; color: var(--teal); font-weight: 600; }
+.chn-edit-btn {
+  background: #fff; border: 1.5px solid var(--teal); border-radius: 999px;
+  color: var(--teal); font: inherit; font-weight: 600; font-size: 14px;
+  padding: 7px 22px; cursor: pointer; transition: all .15s ease;
 }
-.chn-intake-form .chn-review-list { margin: 0; padding: 6px 16px 14px; }
-.chn-intake-form .chn-review-row {
-  display: grid; grid-template-columns: minmax(0, 38%) minmax(0, 1fr);
-  gap: 8px 12px; padding: 9px 0; border-bottom: 1px dashed var(--chn-border);
+.chn-edit-btn:hover { background: var(--teal); color: #fff; }
+.chn-review-list { margin: 0; padding: 0; }
+.chn-review-row {
+  display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+  gap: 10px 18px; padding: 14px 20px; border-bottom: 1px solid var(--line-soft);
 }
-.chn-intake-form .chn-review-row:last-child { border-bottom: none; }
-.chn-intake-form .chn-review-row dt { color: var(--chn-muted-text); font-size: 13px; }
-.chn-intake-form .chn-review-row dd { margin: 0; color: var(--chn-text); font-size: 14px; font-weight: 550; word-break: break-word; }
+.chn-review-row:last-child { border-bottom: none; }
+.chn-review-row dt { color: var(--muted); font-size: 15px; }
+.chn-review-row dd { margin: 0; color: var(--ink); font-size: 15px; font-weight: 600; word-break: break-word; }
+.chn-review-row dd.chn-empty { color: #9aa0a0; font-weight: 500; }
 
-.chn-intake-form .chn-nav {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--chn-border);
-  flex-wrap: wrap;
+/* Confirm box */
+.chn-confirm { background: var(--cream); border-radius: var(--radius); padding: 20px 22px; margin-top: 22px; }
+.chn-confirm > legend { color: var(--cyan-deep); }
+.chn-confirm .chn-field { margin-bottom: 0; }
+
+/* ============================ NAV ============================ */
+.chn-nav {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  margin-top: 30px; padding-top: 26px; border-top: 1px solid var(--line-soft); flex-wrap: wrap;
 }
-.chn-intake-form .chn-btn {
-  font: inherit; font-weight: 650; font-size: 15px; border-radius: var(--chn-radius-sm);
-  padding: 13px 24px; cursor: pointer; border: 1.5px solid transparent;
+.chn-btn {
+  font: inherit; font-weight: 600; font-size: 15px; border-radius: 999px;
+  padding: 14px 30px; cursor: pointer; border: 1.5px solid transparent;
   display: inline-flex; align-items: center; gap: 9px; justify-content: center;
-  min-height: 48px;
+  min-height: 50px; transition: background .15s ease, color .15s ease, border-color .15s ease;
 }
-.chn-intake-form .chn-btn-primary { background: var(--chn-primary); color: #fff; }
-.chn-intake-form .chn-btn-primary:hover:not(:disabled) { background: var(--chn-primary-strong); }
-.chn-intake-form .chn-btn-primary:disabled { opacity: .62; cursor: not-allowed; }
-.chn-intake-form .chn-btn-ghost { background: #fff; color: var(--chn-primary-strong); border-color: var(--chn-field-border); }
-.chn-intake-form [hidden] { display: none !important; }
-.chn-intake-form .chn-spinner {
+.chn-btn:focus-visible { outline: none; box-shadow: var(--ring); }
+.chn-btn-primary { background: var(--teal); color: #fff; }
+.chn-btn-primary:hover:not(:disabled) { background: var(--teal-strong); }
+.chn-btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+.chn-btn-ghost { background: #fff; color: var(--teal); border-color: var(--teal); }
+.chn-btn-ghost:hover:not(:disabled) { background: #f2f6f5; }
+.chn-btn-submit { background: var(--yellow); color: var(--ink); font-weight: 700; }
+.chn-btn-submit:hover:not(:disabled) { background: var(--yellow-dark); }
+.chn-btn-submit:disabled { opacity: .7; cursor: not-allowed; }
+
+[hidden] { display: none !important; }
+.chn-spinner {
   width: 17px; height: 17px; border-radius: 50%;
-  border: 2.5px solid rgba(255,255,255,.45); border-top-color: #fff;
+  border: 2.5px solid rgba(0,22,26,.3); border-top-color: var(--ink);
   animation: chn-spin .7s linear infinite;
 }
 @keyframes chn-spin { to { transform: rotate(360deg); } }
 
-.chn-intake-form .chn-hp {
-  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
-}
+.chn-hp { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
-.chn-intake-form .chn-foot {
-  text-align: center; margin: 20px auto 0; max-width: var(--chn-form-width);
-  font-size: 13px; color: var(--chn-muted-text); padding: 0 16px;
+/* ============================ FOOTER ============================ */
+.chn-foot {
+  text-align: center; margin: 0 auto; max-width: var(--max);
+  font-size: 14px; color: var(--muted); padding: 24px 16px 40px;
+  border-top: 1px solid var(--cream-line);
 }
-.chn-intake-form .chn-foot a { color: var(--chn-primary-strong); font-weight: 600; text-decoration: none; }
+.chn-foot strong { color: var(--ink); font-weight: 700; }
 
-/* ---- Thank you page ------------------------------------------------------- */
-.chn-intake-form .chn-done {
-  padding: clamp(36px, 8vw, 72px) clamp(20px, 5vw, 48px);
-  text-align: center;
-  min-height: 360px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* ============================ THANK YOU ============================ */
+.chn-done {
+  padding: clamp(40px, 7vw, 76px) clamp(22px, 5vw, 56px);
+  text-align: center; display: flex; flex-direction: column; align-items: center;
 }
-.chn-intake-form .chn-done-badge {
-  width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 24px;
-  background: var(--chn-success-soft); display: grid; place-items: center;
+.chn-done-badge {
+  width: 92px; height: 92px; border-radius: 50%; margin: 0 auto 30px;
+  background: var(--cyan); display: grid; place-items: center;
 }
-.chn-intake-form .chn-done-badge svg { width: 42px; height: 42px; stroke: var(--chn-success); }
-.chn-intake-form .chn-done h2 {
-  font-size: clamp(24px, 5vw, 32px); color: var(--chn-secondary);
-  margin: 0 0 14px; letter-spacing: -.01em; max-width: 20ch;
+.chn-done-badge svg { width: 44px; height: 44px; stroke: #fff; }
+.chn-done h2 {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(30px, 5vw, 42px); color: var(--teal);
+  margin: 0 0 20px; letter-spacing: -.01em;
 }
-.chn-intake-form .chn-done p {
-  color: var(--chn-muted-text); font-size: clamp(15px, 3.5vw, 17px);
-  max-width: 48ch; margin: 0 auto 12px; line-height: 1.6;
+.chn-done > p { color: var(--muted); font-size: clamp(15px, 3.5vw, 17px); max-width: 44ch; margin: 0 auto 8px; line-height: 1.6; }
+.chn-done-email-note {
+  background: var(--note-cyan); border-radius: var(--radius);
+  padding: 16px 26px; margin: 26px 0 0; font-size: 15px; color: var(--ink); max-width: 42ch; line-height: 1.5;
 }
-.chn-intake-form .chn-done .chn-done-email-note {
-  background: var(--chn-primary-tint); border-radius: var(--chn-radius-sm);
-  padding: 14px 18px; margin: 20px 0 0; font-size: 14px; color: var(--chn-primary-strong);
-  max-width: 42ch;
-}
-.chn-intake-form .chn-done .chn-done-support { margin-top: 24px; font-size: 14px; }
-.chn-intake-form .chn-done .chn-done-support a { color: var(--chn-primary-strong); font-weight: 700; text-decoration: none; }
+.chn-done-email-note strong { display: block; color: var(--ink); }
+.chn-done-support { margin-top: 26px; font-size: 15px; color: var(--muted); }
+.chn-done-support a { color: var(--ink); font-weight: 700; text-decoration: none; }
 
-.chn-intake-form .chn-sr {
-  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
-}
+.chn-sr { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
-/* ---- Responsive ----------------------------------------------------------- */
+/* ============================ RESPONSIVE ============================ */
+@media (max-width: 760px) {
+  .chn-header { flex-direction: column; }
+  .chn-logo-box { width: 100%; border-right: 0; border-bottom: 1px solid var(--line-soft); padding: 14px; }
+  .chn-logo { max-width: 190px; }
+  .chn-masthead-inner { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .chn-mast-help { text-align: left; }
+}
 @media (max-width: 640px) {
-  .chn-intake-form .chn-grid { grid-template-columns: 1fr; }
-  .chn-intake-form .chn-top-inner { flex-direction: column; align-items: flex-start; }
-  .chn-intake-form .chn-top-phone { align-self: flex-start; }
-  .chn-intake-form .chn-shell { border-radius: 0; border-left: 0; border-right: 0; margin-top: 0; }
-  .chn-intake-form .chn-nav { flex-direction: column-reverse; }
-  .chn-intake-form .chn-nav .chn-btn { width: 100%; }
-  .chn-intake-form .chn-review-row { grid-template-columns: 1fr; gap: 2px; }
-  .chn-intake-form .chn-hlabel { font-size: 10px; }
-  .chn-intake-form .chn-hnode { width: 28px; height: 28px; font-size: 12px; }
+  .chn-grid { grid-template-columns: 1fr; }
+  .chn-nav { flex-direction: column-reverse; }
+  .chn-nav .chn-btn { width: 100%; }
+  .chn-review-row { grid-template-columns: 1fr; gap: 3px; padding: 13px 16px; }
+  .chn-review-head { padding: 14px 16px; }
+  .chn-hlabel { font-size: 11px; }
+  .chn-hnode { width: 34px; height: 34px; font-size: 14px; }
+  .chn-main { padding: 24px 18px; }
 }
-
-@media (max-width: 380px) {
-  .chn-intake-form .chn-hsteps { gap: 4px; }
-  .chn-intake-form .chn-hlabel { display: none; }
-  .chn-intake-form .chn-hsteps li[data-state="current"] .chn-hlabel { display: block; }
-  .chn-intake-form .chn-segment .chn-seg-opt { flex: 1 1 100%; }
+@media (max-width: 420px) {
+  .chn-hsteps { gap: 4px; }
+  .chn-segment { flex-direction: column; }
+  .chn-util-links { gap: 10px; }
 }
-
 @media (prefers-reduced-motion: reduce) {
   .chn-intake-form *, .chn-intake-form *::before, .chn-intake-form *::after {
     animation-duration: .001ms !important; transition-duration: .001ms !important;
@@ -477,29 +440,41 @@ body {
 <body>
 
 <div class="chn-intake-form">
-  <!-- Top header -->
-  <header class="chn-top-header">
-    <div class="chn-top-inner">
-      <div class="chn-top-brand">
-        <div class="chn-logo-wrap">
-          <img class="chn-logo" id="chn-logo" alt="Community Healthcare Network" />
-          <div class="chn-logo-fallback" id="chn-logo-fallback" hidden>
-            Community Healthcare <span>Network</span>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="chn-header">
+    <div class="chn-logo-box">
+      <img class="chn-logo" id="chn-logo" alt="Community Healthcare Network" />
+      <div class="chn-logo-fallback" id="chn-logo-fallback" hidden>Community Healthcare <span>Network</span></div>
+    </div>
+    <div class="chn-header-main">
+      <div class="chn-utility">
+        <div class="chn-utility-inner">
+          <a class="chn-util-call" href="tel:+18662468259">Call 866-246-8259</a>
+          <div class="chn-util-links">
+            <a href="#">My Patient Portal</a>
+            <span class="chn-util-div" aria-hidden="true">|</span>
+            <a href="#">English</a>
           </div>
         </div>
-        <div class="chn-top-text">
-          <p class="chn-top-eyebrow">New patient intake</p>
-          <h1 class="chn-top-title">Welcome — let's get you ready for your visit</h1>
+      </div>
+      <div class="chn-masthead">
+        <div class="chn-masthead-inner">
+          <div class="chn-brand-text">
+            <p class="chn-eyebrow-top">New patient intake</p>
+            <h1 class="chn-mast-title">Welcome — let's get you ready for your visit</h1>
+          </div>
+          <a class="chn-mast-help" href="tel:+18662468259">
+            <span>Need help?</span>
+            <strong>866-246-8259</strong>
+          </a>
         </div>
       </div>
-      <a class="chn-top-phone" href="tel:+18662468259">
-        <small>Need help?</small>
-        866-246-8259
-      </a>
     </div>
   </header>
+  <div class="chn-rule"></div>
 
-  <!-- Step indicator (visible during form; hidden on thank-you) -->
+  <!-- ===================== STEP TRACKER ===================== -->
   <div class="chn-steps-wrap" id="chn-steps-wrap">
     <div class="chn-steps-inner">
       <div class="chn-step-meta">
@@ -512,13 +487,14 @@ body {
         <li data-step="3"><span class="chn-hnode">3</span><span class="chn-hlabel">Health details</span></li>
         <li data-step="4"><span class="chn-hnode">4</span><span class="chn-hlabel">Review</span></li>
       </ol>
-      <div class="chn-progress" role="progressbar" aria-label="Intake progress"
-           aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="chn-progressbar">
-        <div class="chn-progress-fill" id="chn-progress-fill"></div>
+      <div class="chn-steptrack" id="chn-progressbar" role="progressbar" aria-label="Intake progress"
+           aria-valuemin="1" aria-valuemax="4" aria-valuenow="1">
+        <div class="chn-steptrack-fill" id="chn-progress-fill"></div>
       </div>
     </div>
   </div>
 
+  <!-- ===================== CARD ===================== -->
   <div class="chn-shell" id="chn-shell">
     <div class="chn-main">
 
@@ -584,7 +560,7 @@ body {
               <div class="chn-field">
                 <label class="chn-label" for="date_of_birth">Date of birth <span class="chn-req" aria-hidden="true">*</span></label>
                 <input class="chn-input" type="date" id="date_of_birth" name="date_of_birth" autocomplete="bday"
-                       required aria-describedby="date_of_birth-err" />
+                       placeholder="mm/dd/yyyy" required aria-describedby="date_of_birth-err" />
                 <p class="chn-field-error" id="date_of_birth-err"></p>
               </div>
               <div class="chn-field">
@@ -637,7 +613,7 @@ body {
         <!-- STEP 2 -->
         <section class="chn-step" data-step="2" aria-labelledby="chn-s2-h" hidden>
           <div class="chn-step-head">
-            <h2 class="chn-h1" id="chn-s2-h" tabindex="-1">Identity &amp; contact details</h2>
+            <h2 class="chn-h1" id="chn-s2-h" tabindex="-1">Identity &amp; Contact Details</h2>
             <p class="chn-intro">Help us understand your identity and how to reach you and your support people.</p>
           </div>
 
@@ -723,7 +699,7 @@ body {
                 <label class="chn-label" for="emergency_contact_relationship">Their relationship to you <span class="chn-req" aria-hidden="true">*</span></label>
                 <input class="chn-input" type="text" id="emergency_contact_relationship" name="emergency_contact_relationship" autocomplete="off"
                        required aria-describedby="ecr-hint emergency_contact_relationship-err" />
-                <span class="chn-hint" id="ecr-hint">Describe it however makes sense to you.</span>
+                <span class="chn-hint" id="ecr-hint" style="margin-top:8px">Describe it however makes sense to you.</span>
                 <p class="chn-field-error" id="emergency_contact_relationship-err"></p>
               </div>
             </div>
@@ -826,7 +802,7 @@ body {
         <!-- STEP 3 -->
         <section class="chn-step" data-step="3" aria-labelledby="chn-s3-h" hidden>
           <div class="chn-step-head">
-            <h2 class="chn-h1" id="chn-s3-h" tabindex="-1">Health details</h2>
+            <h2 class="chn-h1" id="chn-s3-h" tabindex="-1">Health Details</h2>
             <p class="chn-intro">Just enough for the care team to prepare. Share what you're comfortable with.</p>
           </div>
 
@@ -842,7 +818,7 @@ body {
                 <option>Not sure</option>
                 <option value="Prefer not to answer">Prefer not to answer</option>
               </select>
-              <span class="chn-hint" style="margin-top:8px">CHN never turns anyone away, whether or not you have insurance.</span>
+              <span class="chn-hint" style="margin-top:10px">CHN never turns anyone away, whether or not you have insurance.</span>
             </div>
 
             <div class="chn-conditional" id="wrap-insurance-details" data-show-when="insurance_status" data-show-value="Insured">
@@ -875,13 +851,13 @@ body {
               <label class="chn-label" for="current_medications">Current medications <span class="chn-opt">(optional)</span></label>
               <textarea class="chn-textarea" id="current_medications" name="current_medications"
                         aria-describedby="meds-hint"></textarea>
-              <span class="chn-hint" id="meds-hint">Include prescriptions, over-the-counter medications and supplements.</span>
+              <span class="chn-hint" id="meds-hint" style="margin-top:8px">Include prescriptions, over-the-counter medications and supplements.</span>
             </div>
 
             <div class="chn-field chn-col-2">
               <label class="chn-label" for="allergies">Allergies <span class="chn-opt">(optional)</span></label>
               <textarea class="chn-textarea" id="allergies" name="allergies" aria-describedby="allergies-hint"></textarea>
-              <span class="chn-hint" id="allergies-hint">Include medication, food or other known allergies.</span>
+              <span class="chn-hint" id="allergies-hint" style="margin-top:8px">Include medication, food or other known allergies.</span>
             </div>
           </fieldset>
         </section>
@@ -889,7 +865,7 @@ body {
         <!-- STEP 4 -->
         <section class="chn-step" data-step="4" aria-labelledby="chn-s4-h" hidden>
           <div class="chn-step-head">
-            <h2 class="chn-h1" id="chn-s4-h" tabindex="-1">Almost finished</h2>
+            <h2 class="chn-h1" id="chn-s4-h" tabindex="-1">Almost Finished</h2>
             <p class="chn-intro">Review the information below before securely submitting it to the care team.</p>
           </div>
 
@@ -904,7 +880,7 @@ body {
 
           <div id="chn-review" aria-live="polite"></div>
 
-          <fieldset class="chn-fieldset" style="margin-top:20px">
+          <fieldset class="chn-fieldset chn-confirm">
             <legend>Confirm &amp; submit</legend>
             <div class="chn-field chn-col-2">
               <label class="chn-check" for="information_accuracy_confirmed">
@@ -925,33 +901,32 @@ body {
         <div class="chn-nav">
           <button type="button" class="chn-btn chn-btn-ghost" id="chn-back" hidden>← Back</button>
           <button type="button" class="chn-btn chn-btn-primary" id="chn-continue">Continue →</button>
-          <button type="submit" class="chn-btn chn-btn-primary" id="chn-submit" hidden>
-            <span id="chn-submit-label">Submit securely</span>
+          <button type="submit" class="chn-btn chn-btn-submit" id="chn-submit" hidden>
+            <span id="chn-submit-label">Submit Securely</span>
           </button>
         </div>
       </form>
 
-      <!-- Thank you page -->
+      <!-- Thank you -->
       <div class="chn-done" id="chn-done" hidden>
         <div class="chn-done-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M20 6L9 17l-5-5" />
           </svg>
         </div>
-        <h2 tabindex="-1" id="chn-done-h">Thank you!</h2>
-        <p>We've received your intake form and it's securely on file. There's nothing more you need to do right now.</p>
-        <p>A member of our care team will review it and reach out within a few business days about next steps.</p>
+        <h2 tabindex="-1" id="chn-done-h">Thank You!</h2>
+        <p>Your intake information has been submitted securely to the Community Healthcare Network care team.</p>
         <p class="chn-done-email-note" id="chn-done-email-note" hidden>
-          A confirmation email has been sent to <strong id="chn-done-email"></strong>.
+          A confirmation email has been sent to <strong id="chn-done-email"></strong>
         </p>
-        <p class="chn-done-support">Questions? Call <a href="tel:+18662468259">866-246-8259</a> or email <a href="mailto:info@chnnyc.org">info@chnnyc.org</a>.</p>
+        <p class="chn-done-support">Need assistance? Call <a href="tel:+18662468259">866-246-8259</a></p>
       </div>
 
     </div>
   </div>
 
   <p class="chn-foot">
-    Community Healthcare Network · Patient support <a href="tel:+18662468259">866-246-8259</a>
+    Community Healthcare Network · Patient support <strong>866-246-8259</strong>
   </p>
 </div>
 
@@ -965,7 +940,7 @@ body {
   var GHL_INBOUND_WEBHOOK_URL = "/api/intake";
   var OWNER_EMAIL = "pragati@redcastleservices.com";
   var EMAIL_ENDPOINT = "https://formsubmit.co/ajax/" + OWNER_EMAIL;
-  var CHN_LOGO_URL = "https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/5KlfHXZqugsbkXJAvQ9N/media/6a562b1f46ff6bf801788cb0.png";
+  var CHN_LOGO_URL = "CHN-logo.png";
   var SUBMIT_TIMEOUT_MS = 15000;
   var MIN_COMPLETION_MS = 4000;
   var TOTAL_STEPS = 4;
@@ -1241,34 +1216,48 @@ body {
     errorSummaryList.textContent = "";
   }
 
+  var EMPTY = "—";
   var reviewGroups = [
-    { step: 1, title: "About you", rows: [
-      ["Email", "email"], ["Name you go by", "preferred_name"],
-      ["Legal name different?", "legal_name_different"], ["Legal name", "legal_name"],
+    { step: 1, title: "About You", rows: [
+      ["Email", "email"],
+      ["Name you go by", "preferred_name"],
+      ["Legal name different?", "legal_name_different"],
       ["Date of birth", "date_of_birth"],
       ["Pronouns", "pronouns", "Self-describe", "pronouns_self_describe"],
       ["Preferred language", "preferred_language", "Other", "preferred_language_other"]
     ]},
-    { step: 2, title: "Identity & contact", rows: [
+    { step: 2, title: "Identity & Contact", rows: [
       ["Gender identity", "gender_identity", "Self-describe", "gender_identity_self_describe"],
       ["Sex assigned at birth", "sex_assigned_at_birth"],
-      ["Gender-affirming care", "gender_affirming_care"],
       ["Relationship status", "relationship_status", "Self-describe", "relationship_status_self_describe"],
       ["Emergency contact", "emergency_contact_name"],
       ["Their relationship", "emergency_contact_relationship"],
       ["Emergency contact phone", "emergency_contact_phone"],
       ["Authorized for updates", "emergency_contact_authorized"],
-      ["Address line 1", "address_line_1"], ["Address line 2", "address_line_2"],
-      ["City", "city"], ["State", "state"], ["Postal code", "postal_code"],
-      ["Phone", "phone"], ["Message preference", "detailed_messages_permission"]
+      ["Address line 1", "address_line_1"],
+      ["City", "city"],
+      ["State", "state"],
+      ["Postal code", "postal_code"],
+      ["Phone", "phone"],
+      ["Message preference", "detailed_messages_permission"]
     ]},
-    { step: 3, title: "Health details", rows: [
+    { step: 3, title: "Health Details", rows: [
       ["Insurance status", "insurance_status"],
-      ["Insurance provider", "insurance_provider"], ["Member ID", "insurance_member_id"],
       ["Reason for visit", "reason_for_visit"],
-      ["Current medications", "current_medications"], ["Allergies", "allergies"]
+      ["Current medications", "current_medications"],
+      ["Allergies", "allergies"]
     ]}
   ];
+
+  function addReviewRow(dl, label, value) {
+    var dt = document.createElement("dt"); dt.textContent = label;
+    var dd = document.createElement("dd");
+    if (value) { dd.textContent = value; }
+    else { dd.textContent = EMPTY; dd.className = "chn-empty"; }
+    var wrap = document.createElement("div"); wrap.className = "chn-review-row";
+    wrap.appendChild(dt); wrap.appendChild(dd);
+    dl.appendChild(wrap);
+  }
 
   function buildReview() {
     var container = root.querySelector("#chn-review");
@@ -1292,7 +1281,6 @@ body {
 
       var dl = document.createElement("dl");
       dl.className = "chn-review-list";
-      var anyShown = false;
 
       group.rows.forEach(function (row) {
         var label = row[0], key = row[1];
@@ -1301,24 +1289,13 @@ body {
           var extra = readValue(row[3]);
           value = extra ? (row[2] + " — " + extra) : row[2];
         }
-        if (key === "pronouns_self_describe" || key === "preferred_language_other" ||
-            key === "gender_identity_self_describe" || key === "relationship_status_self_describe") return;
-        if (!value) return;
-
-        anyShown = true;
-        var dt = document.createElement("dt"); dt.textContent = label;
-        var dd = document.createElement("dd"); dd.textContent = value;
-        var wrap = document.createElement("div"); wrap.className = "chn-review-row";
-        wrap.appendChild(dt); wrap.appendChild(dd);
-        dl.appendChild(wrap);
+        addReviewRow(dl, label, value);
+        // Show the legal name right after the Yes/No answer when relevant.
+        if (key === "legal_name_different" && value === "Yes") {
+          addReviewRow(dl, "Legal name", readValue("legal_name"));
+        }
       });
 
-      if (!anyShown) {
-        var empty = document.createElement("p");
-        empty.className = "chn-review-empty";
-        empty.textContent = "No details added.";
-        dl.appendChild(empty);
-      }
       box.appendChild(dl);
       container.appendChild(box);
     });
@@ -1382,20 +1359,15 @@ body {
       return v || "";
     }
     return {
-      /* Owner notification */
       _subject: "New Patient Intake — " + (payload.preferred_name || payload.email || "Submission"),
       _template: "table",
       _captcha: "false",
       _replyto: payload.email,
-      /* Patient confirmation — client-approved copy */
       _autoresponse:
-        "Your intake form has been received.\n\n" +
-        "We've got your form. Here's what happens next.\n\n" +
         "Hi " + name + ",\n\n" +
-        "We've received your intake form and it's securely on file. There's nothing more you need to do right now.\n\n" +
-        "A member of our care team will review it and reach out within a few business days about next steps.\n\n" +
-        "Questions in the meantime? Contact us at 866-246-8259 or info@chnnyc.org, " +
-        "Monday–Thursday 8am–7pm, Friday 8am–5pm, Saturday 8am–4pm.\n\n" +
+        "Thank you for submitting your new patient intake form to Community Healthcare Network. " +
+        "We have received your information and our care team will review it before your visit.\n\n" +
+        "If you have questions, call 866-246-8259.\n\n" +
         "— Community Healthcare Network",
       name: payload.preferred_name,
       email: payload.email,
@@ -1478,7 +1450,7 @@ body {
     if (on) {
       submitBtn.innerHTML = '<span class="chn-spinner" aria-hidden="true"></span><span>Submitting securely…</span>';
     } else {
-      submitBtn.innerHTML = '<span id="chn-submit-label">Submit securely</span>';
+      submitBtn.innerHTML = '<span id="chn-submit-label">Submit Securely</span>';
     }
   }
 
@@ -1558,10 +1530,8 @@ body {
       clearTimeout(timer);
       var ghlOk = results[0];
       var emailOk = results[1];
-      // Both are attempted. Thank-you if GHL succeeded (CRM is primary);
-      // email is best-effort so a FormSubmit hiccup doesn't block the patient.
       if (ghlOk) showSuccess();
-      else if (emailOk) showSuccess(); // fallback: emails went out even if GHL failed
+      else if (emailOk) showSuccess();
       else showFailure();
     });
   });
