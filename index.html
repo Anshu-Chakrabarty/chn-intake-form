@@ -48,6 +48,9 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
   --radius:       10px;
   --radius-sm:    7px;
   --max:          1120px;
+  --logo-w:       clamp(150px, 18vw, 220px);  /* logo column = the divider line */
+  --pad:          clamp(20px, 3vw, 44px);      /* shared content inset */
+  --content-max:  1040px;                      /* steps + card block width */
   --ring:         0 0 0 3px rgba(30,75,72,.25);
 
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
@@ -70,7 +73,7 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
 }
 .chn-logo-box {
   flex: 0 0 auto;
-  width: clamp(150px, 18vw, 220px);
+  width: var(--logo-w);
   display: grid;
   place-items: center;
   padding: 12px 20px;
@@ -85,7 +88,7 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
 .chn-utility { background: var(--cyan); color: #fff; }
 .chn-utility-inner {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 11px clamp(18px, 3vw, 40px);
+  padding: 11px var(--pad);
   font-size: 13px; font-weight: 500;
 }
 .chn-utility a { color: #fff; text-decoration: none; }
@@ -96,7 +99,7 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
 
 .chn-masthead-inner {
   display: flex; align-items: center; justify-content: space-between; gap: 20px;
-  padding: 15px clamp(18px, 3vw, 40px) 17px;
+  padding: 15px var(--pad) 17px;
 }
 .chn-eyebrow-top {
   margin: 0 0 3px; font-size: 11px; font-weight: 700; letter-spacing: .14em;
@@ -122,8 +125,8 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
 /* ============================ STEP TRACKER ============================ */
 .chn-steps-wrap { background: var(--cream); }
 .chn-steps-inner {
-  max-width: var(--max); margin: 0 auto;
-  padding: clamp(18px, 3vw, 26px) clamp(16px, 4vw, 40px) 0;
+  max-width: var(--content-max); margin: 0 0 0 var(--logo-w);
+  padding: clamp(18px, 3vw, 26px) var(--pad) 0;
 }
 .chn-step-meta {
   display: flex; align-items: baseline; justify-content: space-between;
@@ -181,14 +184,14 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
 
 /* ============================ CARD / SHELL ============================ */
 .chn-shell {
-  width: 100%; max-width: var(--max);
-  margin: clamp(18px, 3vw, 30px) auto clamp(28px, 5vw, 52px);
+  width: auto; max-width: var(--content-max);
+  margin: clamp(18px, 3vw, 30px) 0 clamp(28px, 5vw, 52px) var(--logo-w);
   background: var(--surface);
   border-top: 2px solid var(--teal);
   box-shadow: 0 1px 2px rgba(0,22,26,.05), 0 30px 60px -40px rgba(0,22,26,.35);
 }
-.chn-shell.chn-is-complete { max-width: 720px; }
-.chn-main { padding: clamp(26px, 4.5vw, 56px); min-width: 0; }
+.chn-shell.chn-is-complete { max-width: 720px; margin-left: auto; margin-right: auto; }
+.chn-main { padding: clamp(28px, 4vw, 52px) var(--pad); min-width: 0; }
 
 /* ============================ STEP HEADINGS ============================ */
 .chn-step { display: none; }
@@ -414,6 +417,8 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
   .chn-logo { max-width: 190px; }
   .chn-masthead-inner { flex-direction: column; align-items: flex-start; gap: 10px; }
   .chn-mast-help { text-align: left; }
+  /* logo now sits on top, so the content below no longer offsets to a side column */
+  .chn-steps-inner, .chn-shell { margin-left: auto; margin-right: auto; max-width: 680px; }
 }
 @media (max-width: 640px) {
   .chn-grid { grid-template-columns: 1fr; }
