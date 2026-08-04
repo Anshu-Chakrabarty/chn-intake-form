@@ -619,7 +619,7 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
         <section class="chn-step" data-step="2" aria-labelledby="chn-s2-h" hidden>
           <div class="chn-step-head">
             <h2 class="chn-h1" id="chn-s2-h" tabindex="-1">Identity &amp; Contact Details</h2>
-            <p class="chn-intro">Help us understand your identity and how to reach you and your support people.</p>
+            <p class="chn-intro">Help us understand your identity and how to reach you.</p>
           </div>
 
           <fieldset class="chn-fieldset">
@@ -668,9 +668,7 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
           </fieldset>
 
           <fieldset class="chn-fieldset">
-            <legend>Relationships and support</legend>
-            <p class="chn-section-help">So we know who may be contacted, and who should not be.</p>
-
+            <legend>Relationship status</legend>
             <div class="chn-field chn-col-2">
               <label class="chn-label" for="relationship_status">Relationship status <span class="chn-opt">(optional)</span></label>
               <select class="chn-select" id="relationship_status" name="relationship_status" data-reveals="wrap-rel-self" data-reveal-value="Self-describe">
@@ -692,82 +690,15 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
               <label class="chn-label" for="relationship_status_self_describe">How would you describe it?</label>
               <input class="chn-input" type="text" id="relationship_status_self_describe" name="relationship_status_self_describe" autocomplete="off" disabled />
             </div>
-
-            <div class="chn-grid">
-              <div class="chn-field">
-                <label class="chn-label" for="emergency_contact_name">Emergency contact name <span class="chn-req" aria-hidden="true">*</span></label>
-                <input class="chn-input" type="text" id="emergency_contact_name" name="emergency_contact_name" autocomplete="off"
-                       required aria-describedby="emergency_contact_name-err" />
-                <p class="chn-field-error" id="emergency_contact_name-err"></p>
-              </div>
-              <div class="chn-field">
-                <label class="chn-label" for="emergency_contact_relationship">Their relationship to you <span class="chn-req" aria-hidden="true">*</span></label>
-                <input class="chn-input" type="text" id="emergency_contact_relationship" name="emergency_contact_relationship" autocomplete="off"
-                       required aria-describedby="ecr-hint emergency_contact_relationship-err" />
-                <span class="chn-hint" id="ecr-hint" style="margin-top:8px">Describe it however makes sense to you.</span>
-                <p class="chn-field-error" id="emergency_contact_relationship-err"></p>
-              </div>
-            </div>
-
-            <div class="chn-grid">
-              <div class="chn-field">
-                <label class="chn-label" for="emergency_contact_phone">Emergency contact phone <span class="chn-req" aria-hidden="true">*</span></label>
-                <input class="chn-input" type="tel" id="emergency_contact_phone" name="emergency_contact_phone"
-                       autocomplete="tel" inputmode="tel" required aria-describedby="emergency_contact_phone-err" />
-                <p class="chn-field-error" id="emergency_contact_phone-err"></p>
-              </div>
-              <div class="chn-field">
-                <label class="chn-label" id="eca-label">Authorized to receive updates about your care? <span class="chn-req" aria-hidden="true">*</span></label>
-                <div class="chn-segment" role="radiogroup" aria-labelledby="eca-label" aria-describedby="emergency_contact_authorized-err">
-                  <span class="chn-seg-opt">
-                    <input type="radio" id="eca-yes" name="emergency_contact_authorized" value="Yes" />
-                    <label for="eca-yes">Yes</label>
-                  </span>
-                  <span class="chn-seg-opt">
-                    <input type="radio" id="eca-no" name="emergency_contact_authorized" value="No" />
-                    <label for="eca-no">No</label>
-                  </span>
-                </div>
-                <p class="chn-field-error" id="emergency_contact_authorized-err"></p>
-              </div>
-            </div>
           </fieldset>
 
           <fieldset class="chn-fieldset">
             <legend>Your contact information</legend>
-
-            <div class="chn-field chn-col-2">
-              <label class="chn-label" for="address_line_1">Address line 1 <span class="chn-req" aria-hidden="true">*</span></label>
-              <input class="chn-input" type="text" id="address_line_1" name="address_line_1" autocomplete="address-line1"
-                     required aria-describedby="address_line_1-err" />
-              <p class="chn-field-error" id="address_line_1-err"></p>
-            </div>
-
-            <div class="chn-field chn-col-2">
-              <label class="chn-label" for="address_line_2">Address line 2 <span class="chn-opt">(optional)</span></label>
-              <input class="chn-input" type="text" id="address_line_2" name="address_line_2" autocomplete="address-line2" />
-            </div>
+            <p class="chn-section-help">We only need your ZIP code and phone for now. Full address can be shared at your clinical intake.</p>
 
             <div class="chn-grid">
               <div class="chn-field">
-                <label class="chn-label" for="city">City <span class="chn-req" aria-hidden="true">*</span></label>
-                <input class="chn-input" type="text" id="city" name="city" autocomplete="address-level2"
-                       required aria-describedby="city-err" />
-                <p class="chn-field-error" id="city-err"></p>
-              </div>
-              <div class="chn-field">
-                <label class="chn-label" for="state">State <span class="chn-req" aria-hidden="true">*</span></label>
-                <select class="chn-select" id="state" name="state" autocomplete="address-level1"
-                        required aria-describedby="state-err">
-                  <option value="">Select</option>
-                </select>
-                <p class="chn-field-error" id="state-err"></p>
-              </div>
-            </div>
-
-            <div class="chn-grid">
-              <div class="chn-field">
-                <label class="chn-label" for="postal_code">Postal code <span class="chn-req" aria-hidden="true">*</span></label>
+                <label class="chn-label" for="postal_code">ZIP code <span class="chn-req" aria-hidden="true">*</span></label>
                 <input class="chn-input" type="text" id="postal_code" name="postal_code" autocomplete="postal-code"
                        inputmode="numeric" required aria-describedby="postal_code-err" />
                 <p class="chn-field-error" id="postal_code-err"></p>
@@ -808,7 +739,7 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
         <section class="chn-step" data-step="3" aria-labelledby="chn-s3-h" hidden>
           <div class="chn-step-head">
             <h2 class="chn-h1" id="chn-s3-h" tabindex="-1">Health Details</h2>
-            <p class="chn-intro">Just enough for the care team to prepare. Share what you're comfortable with.</p>
+            <p class="chn-intro">Just enough for our team to connect with you and help with PrEP enrollment.</p>
           </div>
 
           <fieldset class="chn-fieldset">
@@ -841,28 +772,42 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
           </fieldset>
 
           <fieldset class="chn-fieldset">
-            <legend>Health basics</legend>
-            <p class="chn-section-help">A few details to help the care team prepare for your visit.</p>
+            <legend>Reason for visit</legend>
+            <p class="chn-section-help">Select the option that best fits why you're reaching out.</p>
 
             <div class="chn-field chn-col-2">
-              <label class="chn-label" for="reason_for_visit">Reason for visit <span class="chn-req" aria-hidden="true">*</span></label>
-              <textarea class="chn-textarea" id="reason_for_visit" name="reason_for_visit"
-                        placeholder="In your own words, what would you like to be seen for?"
-                        required aria-describedby="reason_for_visit-err"></textarea>
+              <label class="chn-label" id="rfv-label">Reason for visit <span class="chn-req" aria-hidden="true">*</span></label>
+              <div class="chn-cards" role="radiogroup" aria-labelledby="rfv-label" aria-describedby="reason_for_visit-err">
+                <span class="chn-card">
+                  <input type="radio" id="rfv-1" name="reason_for_visit" value="Start PrEP" data-reveals="wrap-reason-other" />
+                  <label for="rfv-1">Start PrEP</label>
+                </span>
+                <span class="chn-card">
+                  <input type="radio" id="rfv-2" name="reason_for_visit" value="Restart PrEP" data-reveals="wrap-reason-other" />
+                  <label for="rfv-2">Restart PrEP</label>
+                </span>
+                <span class="chn-card">
+                  <input type="radio" id="rfv-3" name="reason_for_visit" value="Switch PrEP providers" data-reveals="wrap-reason-other" />
+                  <label for="rfv-3">Switch PrEP providers</label>
+                </span>
+                <span class="chn-card">
+                  <input type="radio" id="rfv-4" name="reason_for_visit" value="I have questions about PrEP" data-reveals="wrap-reason-other" />
+                  <label for="rfv-4">I have questions about PrEP</label>
+                </span>
+                <span class="chn-card">
+                  <input type="radio" id="rfv-5" name="reason_for_visit" value="Other" data-reveals="wrap-reason-other" data-reveal-value="Other" />
+                  <label for="rfv-5">Other</label>
+                </span>
+              </div>
               <p class="chn-field-error" id="reason_for_visit-err"></p>
             </div>
 
-            <div class="chn-field chn-col-2">
-              <label class="chn-label" for="current_medications">Current medications <span class="chn-opt">(optional)</span></label>
-              <textarea class="chn-textarea" id="current_medications" name="current_medications"
-                        aria-describedby="meds-hint"></textarea>
-              <span class="chn-hint" id="meds-hint" style="margin-top:8px">Include prescriptions, over-the-counter medications and supplements.</span>
-            </div>
-
-            <div class="chn-field chn-col-2">
-              <label class="chn-label" for="allergies">Allergies <span class="chn-opt">(optional)</span></label>
-              <textarea class="chn-textarea" id="allergies" name="allergies" aria-describedby="allergies-hint"></textarea>
-              <span class="chn-hint" id="allergies-hint" style="margin-top:8px">Include medication, food or other known allergies.</span>
+            <div class="chn-field chn-col-2 chn-conditional" id="wrap-reason-other"
+                 data-show-when="reason_for_visit" data-show-value="Other">
+              <label class="chn-label" for="reason_for_visit_other">Please tell us more <span class="chn-req" aria-hidden="true">*</span></label>
+              <input class="chn-input" type="text" id="reason_for_visit_other" name="reason_for_visit_other" autocomplete="off"
+                     data-required-when-visible aria-describedby="reason_for_visit_other-err" disabled />
+              <p class="chn-field-error" id="reason_for_visit_other-err"></p>
             </div>
           </fieldset>
         </section>
@@ -919,12 +864,15 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
             <path d="M20 6L9 17l-5-5" />
           </svg>
         </div>
-        <h2 tabindex="-1" id="chn-done-h">Thank You!</h2>
-        <p>Your intake information has been submitted securely to the Community Healthcare Network care team.</p>
+        <h2 tabindex="-1" id="chn-done-h">Your intake form has been received</h2>
+        <p>We've got your form. Here's what happens next.</p>
+        <p>We've received your intake form and it's securely on file. There's nothing more you need to do right now.</p>
+        <p>A member of our care team will review it and reach out within a few business days about next steps.</p>
         <p class="chn-done-email-note" id="chn-done-email-note" hidden>
           A confirmation email has been sent to <strong id="chn-done-email"></strong>
         </p>
-        <p class="chn-done-support">Need assistance? Call <a href="tel:+18662468259">866-246-8259</a></p>
+        <p class="chn-done-support">Questions? Call <a href="tel:+18662468259">866-246-8259</a> or email <a href="mailto:info@chnnyc.org">info@chnnyc.org</a><br>
+          Monday–Thursday 8am–7pm, Friday 8am–5pm, Saturday 8am–4pm</p>
       </div>
 
     </div>
@@ -977,28 +925,6 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
     } else {
       img.hidden = true; if (fb) fb.hidden = false;
     }
-  })();
-
-  (function fillStates() {
-    var states = [
-      ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
-      ["CO","Colorado"],["CT","Connecticut"],["DE","Delaware"],["DC","District of Columbia"],
-      ["FL","Florida"],["GA","Georgia"],["HI","Hawaii"],["ID","Idaho"],["IL","Illinois"],
-      ["IN","Indiana"],["IA","Iowa"],["KS","Kansas"],["KY","Kentucky"],["LA","Louisiana"],
-      ["ME","Maine"],["MD","Maryland"],["MA","Massachusetts"],["MI","Michigan"],["MN","Minnesota"],
-      ["MS","Mississippi"],["MO","Missouri"],["MT","Montana"],["NE","Nebraska"],["NV","Nevada"],
-      ["NH","New Hampshire"],["NJ","New Jersey"],["NM","New Mexico"],["NY","New York"],
-      ["NC","North Carolina"],["ND","North Dakota"],["OH","Ohio"],["OK","Oklahoma"],["OR","Oregon"],
-      ["PA","Pennsylvania"],["PR","Puerto Rico"],["RI","Rhode Island"],["SC","South Carolina"],
-      ["SD","South Dakota"],["TN","Tennessee"],["TX","Texas"],["UT","Utah"],["VT","Vermont"],
-      ["VA","Virginia"],["WA","Washington"],["WV","West Virginia"],["WI","Wisconsin"],["WY","Wyoming"]
-    ];
-    var sel = root.querySelector("#state");
-    states.forEach(function (s) {
-      var o = document.createElement("option");
-      o.value = s[1]; o.textContent = s[1];
-      sel.appendChild(o);
-    });
   })();
 
   function innerFields(wrap) {
@@ -1159,14 +1085,14 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
 
     var requiredGroups = [];
     if (step === 1) requiredGroups = ["legal_name_different"];
-    if (step === 2) requiredGroups = ["emergency_contact_authorized"];
+    if (step === 3) requiredGroups = ["reason_for_visit"];
     requiredGroups.forEach(function (name) {
       var group = form.elements[name];
       var chosen = group && group.value;
       var errEl = root.querySelector("#" + name + "-err");
       var firstInput = section.querySelector('[name="' + name + '"]');
       if (!chosen) {
-        problems.push({ field: firstInput, errEl: errEl, message: "Please choose an option.", label: labelFor(firstInput) });
+        problems.push({ field: firstInput, errEl: errEl, message: "Please choose an option.", label: labelFor(firstInput) || "Reason for visit" });
       }
     });
 
@@ -1234,23 +1160,15 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
     { step: 2, title: "Identity & Contact", rows: [
       ["Gender identity", "gender_identity", "Self-describe", "gender_identity_self_describe"],
       ["Sex assigned at birth", "sex_assigned_at_birth"],
+      ["Gender-affirming care", "gender_affirming_care"],
       ["Relationship status", "relationship_status", "Self-describe", "relationship_status_self_describe"],
-      ["Emergency contact", "emergency_contact_name"],
-      ["Their relationship", "emergency_contact_relationship"],
-      ["Emergency contact phone", "emergency_contact_phone"],
-      ["Authorized for updates", "emergency_contact_authorized"],
-      ["Address line 1", "address_line_1"],
-      ["City", "city"],
-      ["State", "state"],
-      ["Postal code", "postal_code"],
+      ["ZIP code", "postal_code"],
       ["Phone", "phone"],
       ["Message preference", "detailed_messages_permission"]
     ]},
     { step: 3, title: "Health Details", rows: [
       ["Insurance status", "insurance_status"],
-      ["Reason for visit", "reason_for_visit"],
-      ["Current medications", "current_medications"],
-      ["Allergies", "allergies"]
+      ["Reason for visit", "reason_for_visit", "Other", "reason_for_visit_other"]
     ]}
   ];
 
@@ -1320,21 +1238,11 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
       sex_assigned_at_birth: v("sex_assigned_at_birth"),
       gender_affirming_care: root.querySelector("#gender_affirming_care").checked,
       relationship_status: v("relationship_status"),
-      emergency_contact_name: v("emergency_contact_name"),
-      emergency_contact_relationship: v("emergency_contact_relationship"),
-      emergency_contact_phone: v("emergency_contact_phone"),
-      emergency_contact_authorized: v("emergency_contact_authorized"),
-      address_line_1: v("address_line_1"),
-      address_line_2: v("address_line_2"),
-      city: v("city"),
-      state: v("state"),
       postal_code: v("postal_code"),
       phone: v("phone"),
       detailed_messages_permission: v("detailed_messages_permission"),
       insurance_status: v("insurance_status"),
       reason_for_visit: v("reason_for_visit"),
-      current_medications: v("current_medications"),
-      allergies: v("allergies"),
       care_team_notes: v("care_team_notes"),
       information_accuracy_confirmed: root.querySelector("#information_accuracy_confirmed").checked,
       form_name: "Community Healthcare Network New Patient Intake",
@@ -1348,6 +1256,7 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
     if (p.preferred_language === "Other") p.preferred_language_other = v("preferred_language_other");
     if (p.gender_identity === "Self-describe") p.gender_identity_self_describe = v("gender_identity_self_describe");
     if (p.relationship_status === "Self-describe") p.relationship_status_self_describe = v("relationship_status_self_describe");
+    if (p.reason_for_visit === "Other") p.reason_for_visit_other = v("reason_for_visit_other");
     if (p.insurance_status === "Insured") {
       p.insurance_provider = v("insurance_provider");
       p.insurance_member_id = v("insurance_member_id");
@@ -1363,17 +1272,26 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
       if (v === false || v === "No") return "No";
       return v || "";
     }
+    var reason = payload.reason_for_visit || "";
+    if (reason === "Other" && payload.reason_for_visit_other) {
+      reason = "Other — " + payload.reason_for_visit_other;
+    }
+    var patientConfirmation =
+      "We've got your form. Here's what happens next.\n\n" +
+      "Hi " + name + ",\n\n" +
+      "We've received your intake form and it's securely on file. There's nothing more you need to do right now.\n\n" +
+      "A member of our care team will review it and reach out within a few business days about next steps. " +
+      "Questions in the meantime? Contact us at 866-246-8259 or info@chnnyc.org, " +
+      "Monday–Thursday 8am–7pm, Friday 8am–5pm, Saturday 8am–4pm.\n\n" +
+      "Warmly,\n" +
+      "Community Healthcare Network";
+
     return {
       _subject: "New Patient Intake — " + (payload.preferred_name || payload.email || "Submission"),
       _template: "table",
       _captcha: "false",
       _replyto: payload.email,
-      _autoresponse:
-        "Hi " + name + ",\n\n" +
-        "Thank you for submitting your new patient intake form to Community Healthcare Network. " +
-        "We have received your information and our care team will review it before your visit.\n\n" +
-        "If you have questions, call 866-246-8259.\n\n" +
-        "— Community Healthcare Network",
+      _autoresponse: patientConfirmation,
       name: payload.preferred_name,
       email: payload.email,
       phone: payload.phone,
@@ -1386,22 +1304,12 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
       sex_assigned_at_birth: payload.sex_assigned_at_birth || "",
       gender_affirming_care: yn(payload.gender_affirming_care),
       relationship_status: payload.relationship_status || "",
-      emergency_contact_name: payload.emergency_contact_name,
-      emergency_contact_relationship: payload.emergency_contact_relationship,
-      emergency_contact_phone: payload.emergency_contact_phone,
-      emergency_contact_authorized: payload.emergency_contact_authorized,
-      address_line_1: payload.address_line_1,
-      address_line_2: payload.address_line_2 || "",
-      city: payload.city,
-      state: payload.state,
       postal_code: payload.postal_code,
       detailed_messages_permission: payload.detailed_messages_permission || "",
       insurance_status: payload.insurance_status || "",
       insurance_provider: payload.insurance_provider || "",
       insurance_member_id: payload.insurance_member_id || "",
-      reason_for_visit: payload.reason_for_visit,
-      current_medications: payload.current_medications || "",
-      allergies: payload.allergies || "",
+      reason_for_visit: reason,
       care_team_notes: payload.care_team_notes || "",
       information_accuracy_confirmed: yn(payload.information_accuracy_confirmed),
       form_name: payload.form_name
@@ -1409,9 +1317,7 @@ body { margin: 0; min-height: 100vh; overflow-x: hidden; }
   }
 
   function hasContactKey(p) {
-    return !!((p.email && p.email.length) ||
-              (p.phone && p.phone.length) ||
-              (p.emergency_contact_phone && p.emergency_contact_phone.length));
+    return !!((p.email && p.email.length) || (p.phone && p.phone.length));
   }
 
   function sendPartial(reason) {
